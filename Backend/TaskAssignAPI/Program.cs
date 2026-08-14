@@ -1,6 +1,9 @@
 
 using Microsoft.EntityFrameworkCore;
 using TaskAssignAPI.Data;
+using TaskAssignAPI.Interfaces;
+using TaskAssignAPI.Repositories;
+using TaskAssignAPI.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +11,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 
 // Add services to the container.
 
