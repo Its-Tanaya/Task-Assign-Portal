@@ -16,6 +16,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<ILoginService, LoginService>();
+builder.Services.AddScoped<ITaskService, TaskService>();
 
 // Add services to the container.
 

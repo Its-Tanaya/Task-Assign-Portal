@@ -13,6 +13,12 @@ namespace TaskAssignAPI.Mappings
 
             CreateMap<Employees, EmployeeDto>();
             CreateMap<EmployeeDto, Employees>();
+
+            CreateMap<Tasks, TaskDto>();
+            CreateMap<TaskDto, Tasks>();
+
+            CreateMap<TaskAssignments, TaskAssignmentDto>();
+            CreateMap<TaskAssignmentDto, TaskAssignments>();
         }
     }
 }
