@@ -1,7 +1,10 @@
-﻿namespace TaskAssignAPI.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace TaskAssignAPI.Models
 {
     public class SalaryHistory
     {
+        [Key]
         public int SalaryHistoryId { get; set; }
 
         public int EmployeeId { get; set; }

@@ -1,7 +1,10 @@
-﻿namespace TaskAssignAPI.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace TaskAssignAPI.Models
 {
     public class Employees
     {
+        [Key]
         public int EmployeeId { get; set; }
 
         public string EmployeeCode { get; set; } = string.Empty;

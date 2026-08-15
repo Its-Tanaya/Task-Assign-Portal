@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using TaskAssignAPI.Models;
+using TaskAssignAPI.DTOs;
 using TaskAssignAPI.Services;
 
 namespace TaskAssignAPI.Controllers
@@ -20,6 +20,7 @@ namespace TaskAssignAPI.Controllers
         public async Task<IActionResult> GetAllEmployees()
         {
             var employees = await _employeeService.GetAllEmployeesAsync();
+
             return Ok(employees);
         }
 
@@ -37,7 +38,7 @@ namespace TaskAssignAPI.Controllers
 
         // POST: api/Employee
         [HttpPost]
-        public async Task<IActionResult> AddEmployee(Employees employee)
+        public async Task<IActionResult> AddEmployee(EmployeeDto employee)
         {
             await _employeeService.AddEmployeeAsync(employee);
 
@@ -46,7 +47,9 @@ namespace TaskAssignAPI.Controllers
 
         // PUT: api/Employee/1
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateEmployee(int id, Employees employee)
+        public async Task<IActionResult> UpdateEmployee(
+            int id,
+            EmployeeDto employee)
         {
             if (id != employee.EmployeeId)
                 return BadRequest("Employee ID does not match.");

@@ -1,10 +1,11 @@
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using TaskAssignAPI.Data;
 using TaskAssignAPI.Interfaces;
+using TaskAssignAPI.Mappings;
 using TaskAssignAPI.Repositories;
 using TaskAssignAPI.Services;
-
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +19,12 @@ builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 // Add services to the container.
 
 builder.Services.AddControllers();
+
+builder.Services.AddAutoMapper(cfg =>
+{
+    cfg.AddProfile<UserProfile>();
+});
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

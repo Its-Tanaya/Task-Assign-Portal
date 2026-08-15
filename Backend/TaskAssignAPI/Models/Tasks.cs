@@ -1,7 +1,10 @@
-﻿namespace TaskAssignAPI.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace TaskAssignAPI.Models
 {
     public class Tasks
     {
+        [Key]
         public int TaskId { get; set; }
 
         public string Title { get; set; } = string.Empty;

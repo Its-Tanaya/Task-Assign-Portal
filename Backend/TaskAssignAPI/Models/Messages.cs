@@ -1,7 +1,10 @@
-﻿namespace TaskAssignAPI.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace TaskAssignAPI.Models
 {
     public class Messages
     {
+        [Key]
         public int MessageId { get; set; }
 
         public int SenderId { get; set; }
