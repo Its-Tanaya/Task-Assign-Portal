@@ -1,0 +1,70 @@
+<div class="messages-page">
+  <div class="messages-container">
+    <!-- Inbox Sidebar -->
+    <div class="inbox-sidebar">
+      <div class="inbox-header">
+        <h2>Messages</h2>
+        <span class="sub-label">Portal Direct Chat</span>
+      </div>
+
+      <div class="user-list">
+        <div
+          *ngFor="let emp of otherEmployees"
+          (click)="selectRecipient(emp.userId)"
+          class="user-item"
+          [class.active]="emp.userId === selectedRecipientId"
+        >
+          <div class="user-avatar">
+            {{ emp.name.substring(0, 1) }}
+          </div>
+          <div class="user-details">
+            <span class="user-name">{{ emp.name }}</span>
+            <span class="user-role">{{ emp.role }}</span>
+          </div>
+          <span *ngIf="getUnreadCount(emp.userId) > 0" class="unread-badge">
+            {{ getUnreadCount(emp.userId) }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Chat Area -->
+    <div class="chat-area" *ngIf="selectedRecipient">
+      <div class="chat-header">
+        <div class="header-avatar">{{ selectedRecipient.name.substring(0, 1) }}</div>
+        <div>
+          <h3>{{ selectedRecipient.name }}</h3>
+          <span class="status-indicator">● Active Portal User ({{ selectedRecipient.role }})</span>
+        </div>
+      </div>
+
+      <div class="chat-thread">
+        <div
+          *ngFor="let msg of activeThread"
+          class="msg-bubble-wrap"
+          [class.sent]="msg.senderId === currentUserId"
+          [class.received]="msg.senderId !== currentUserId"
+        >
+          <div class="msg-bubble">
+            <p>{{ msg.messageText }}</p>
+            <span class="msg-time">{{ msg.sentAt }}</span>
+          </div>
+        </div>
+
+        <div *ngIf="activeThread.length === 0" class="no-messages">
+          <p>No prior messages with {{ selectedRecipient.name }}. Send a message below to start conversation.</p>
+        </div>
+      </div>
+
+      <div class="chat-input-bar">
+        <input
+          type="text"
+          [(ngModel)]="newMessageText"
+          (keyup.enter)="sendMessage()"
+          placeholder="Type your message here..."
+        />
+        <button (click)="sendMessage()" class="btn-send">Send ✈️</button>
+      </div>
+    </div>
+  </div>
+</div>

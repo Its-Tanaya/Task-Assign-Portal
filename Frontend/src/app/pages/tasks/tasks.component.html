@@ -1,0 +1,189 @@
+<div class="tasks-page">
+  <div class="page-header">
+    <div>
+      <h1>Task Management</h1>
+      <p class="subtitle">Create, assign, track priorities and update status of portal tasks</p>
+    </div>
+    <button *ngIf="authService.getRole() !== 'Employee'" (click)="openCreateModal()" class="btn-primary">
+      + Create Task
+    </button>
+  </div>
+
+  <!-- Filters -->
+  <div class="filter-bar">
+    <div class="filter-group">
+      <label>Status Filter:</label>
+      <select [(ngModel)]="statusFilter">
+        <option value="ALL">All Statuses</option>
+        <option value="Unassigned">Unassigned</option>
+        <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label>Priority Filter:</label>
+      <select [(ngModel)]="priorityFilter">
+        <option value="ALL">All Priorities</option>
+        <option *ngFor="let p of priorities" [value]="p">{{ p }}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Task Table -->
+  <div class="table-card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Task ID</th>
+          <th>Title & Description</th>
+          <th>Priority</th>
+          <th>Assigned To</th>
+          <th>Start Date</th>
+          <th>Deadline</th>
+          <th>Status Badge</th>
+          <th class="text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let row of taskRows">
+          <td class="font-mono">#{{ row.task.taskId }}</td>
+          <td>
+            <div class="task-title" (click)="openDetailModal(row)">{{ row.task.title }}</div>
+            <div class="task-desc">{{ row.task.description }}</div>
+          </td>
+          <td>
+            <span class="priority-badge" [ngClass]="row.task.priority.toLowerCase()">
+              {{ row.task.priority }}
+            </span>
+          </td>
+          <td>
+            <span *ngIf="row.assignedEmployee" class="emp-tag">👤 {{ row.assignedEmployee.name }}</span>
+            <span *ngIf="!row.assignedEmployee" class="unassigned-tag">Unassigned</span>
+          </td>
+          <td>{{ row.task.startDate }}</td>
+          <td>{{ row.task.deadline }}</td>
+          <td>
+            <div *ngIf="row.assignment">
+              <select
+                [value]="row.assignment.status"
+                (change)="updateStatus(row.assignment.taskAssignmentId, $event)"
+                class="status-select"
+                [ngClass]="row.assignment.status.toLowerCase().replace(' ', '-')"
+              >
+                <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
+              </select>
+            </div>
+            <span *ngIf="!row.assignment" class="status-badge unassigned">Unassigned</span>
+          </td>
+          <td class="text-right actions-cell">
+            <button (click)="openDetailModal(row)" class="btn-icon" title="View Details">👁️</button>
+            <button *ngIf="!row.assignment && authService.getRole() !== 'Employee'" (click)="openAssignModal(row.task)" class="btn-icon" title="Assign Task">📌</button>
+          </td>
+        </tr>
+        <tr *ngIf="taskRows.length === 0">
+          <td colspan="8" class="empty-row">No tasks found matching filter criteria.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Create Task Modal -->
+  <div *ngIf="showCreateModal" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Create New Task</h3>
+        <button (click)="closeCreateModal()" class="btn-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Task Title *</label>
+          <input type="text" [(ngModel)]="newTask.title" placeholder="Enter task title" />
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea [(ngModel)]="newTask.description" rows="3" placeholder="Provide detailed task instructions..."></textarea>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Priority</label>
+            <select [(ngModel)]="newTask.priority">
+              <option *ngFor="let p of priorities" [value]="p">{{ p }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Deadline</label>
+            <input type="date" [(ngModel)]="newTask.deadline" />
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button (click)="closeCreateModal()" class="btn-secondary">Cancel</button>
+        <button (click)="saveTask()" class="btn-primary">Create Task</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Assign Task Modal -->
+  <div *ngIf="showAssignModal && selectedTask" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Assign Task: {{ selectedTask.title }}</h3>
+        <button (click)="closeAssignModal()" class="btn-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Select Assignee Employee *</label>
+          <select [(ngModel)]="assignEmployeeId">
+            <option [value]="null">-- Choose Employee --</option>
+            <option *ngFor="let emp of mockData.employees()" [value]="emp.employeeId">
+              {{ emp.name }} ({{ emp.role }} - {{ emp.employeeCode }})
+            </option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button (click)="closeAssignModal()" class="btn-secondary">Cancel</button>
+        <button (click)="saveAssignment()" class="btn-primary">Confirm Assignment</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detail Modal -->
+  <div *ngIf="showDetailModal && selectedTask" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Task Details - #{{ selectedTask.taskId }}</h3>
+        <button (click)="closeDetailModal()" class="btn-close">✕</button>
+      </div>
+      <div class="modal-body details-body">
+        <div class="detail-row">
+          <span class="label">Title:</span>
+          <span class="val font-bold">{{ selectedTask.title }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Description:</span>
+          <span class="val">{{ selectedTask.description || 'No description provided.' }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Priority:</span>
+          <span class="val">
+            <span class="priority-badge" [ngClass]="selectedTask.priority.toLowerCase()">
+              {{ selectedTask.priority }}
+            </span>
+          </span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Start Date:</span>
+          <span class="val">{{ selectedTask.startDate }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Deadline:</span>
+          <span class="val">{{ selectedTask.deadline }}</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button (click)="closeDetailModal()" class="btn-secondary">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

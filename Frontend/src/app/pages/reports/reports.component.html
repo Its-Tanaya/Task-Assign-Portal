@@ -1,0 +1,84 @@
+<div class="reports-page">
+  <div class="page-header">
+    <div>
+      <h1>Portal Performance Reports</h1>
+      <p class="subtitle">Task completion metrics, overdue status tracking, and employee productivity reports</p>
+    </div>
+  </div>
+
+  <!-- Summary Metric Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="icon-wrap blue">📋</div>
+      <div class="stat-details">
+        <span class="stat-val">{{ totalTasksCount }}</span>
+        <span class="stat-label">Total Portal Tasks</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="icon-wrap yellow">⏳</div>
+      <div class="stat-details">
+        <span class="stat-val">{{ pendingCount }}</span>
+        <span class="stat-label">Pending Tasks</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="icon-wrap green">✅</div>
+      <div class="stat-details">
+        <span class="stat-val">{{ completedCount }}</span>
+        <span class="stat-label">Completed Tasks</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="icon-wrap red">⚠️</div>
+      <div class="stat-details">
+        <span class="stat-val">{{ overdueCount }}</span>
+        <span class="stat-label">Overdue Tasks</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Employee Performance Table -->
+  <div class="table-card">
+    <div class="card-header">
+      <h3>Employee Task Completion Rate</h3>
+    </div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Employee Code</th>
+          <th>Name</th>
+          <th>Role</th>
+          <th>Total Assigned</th>
+          <th>Completed</th>
+          <th>Pending</th>
+          <th>Overdue</th>
+          <th>Completion Rate</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let row of employeePerformance">
+          <td class="font-mono">{{ row.employee.employeeCode }}</td>
+          <td class="font-bold">{{ row.employee.name }}</td>
+          <td>
+            <span class="role-badge" [ngClass]="row.employee.role.toLowerCase().replace(' ', '-')">
+              {{ row.employee.role }}
+            </span>
+          </td>
+          <td>{{ row.assignedCount }}</td>
+          <td class="text-green font-bold">{{ row.completedCount }}</td>
+          <td class="text-yellow">{{ row.pendingCount }}</td>
+          <td class="text-red font-bold">{{ row.overdueCount }}</td>
+          <td>
+            <div class="rate-wrap">
+              <div class="progress-bar">
+                <div class="progress-fill" [style.width.%]="row.completionRate"></div>
+              </div>
+              <span class="rate-text">{{ row.completionRate }}%</span>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,63 @@
+.sidebar {
+  width: 240px;
+  background-color: #0f172a;
+  color: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 60px);
+  box-sizing: border-box;
+
+  .sidebar-header {
+    padding: 1.25rem 1.5rem 0.75rem;
+
+    .portal-tag {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #64748b;
+      letter-spacing: 1px;
+    }
+  }
+
+  .sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.5rem;
+    flex: 1;
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      color: #94a3b8;
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.2s;
+
+      .icon {
+        font-size: 1.1rem;
+      }
+
+      &:hover {
+        background-color: #1e293b;
+        color: #f8fafc;
+      }
+
+      &.active {
+        background-color: #2563eb;
+        color: #ffffff;
+        font-weight: 600;
+      }
+    }
+  }
+
+  .sidebar-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #1e293b;
+    font-size: 0.8rem;
+    color: #64748b;
+  }
+}

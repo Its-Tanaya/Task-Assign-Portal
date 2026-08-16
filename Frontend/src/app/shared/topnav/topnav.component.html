@@ -1,0 +1,23 @@
+<header class="topnav">
+  <div class="topnav-brand">
+    <span class="brand-icon">📋</span>
+    <span class="brand-title">Task Assign Portal</span>
+  </div>
+
+  <div class="topnav-user" *ngIf="authService.currentUser() as user">
+    <div class="role-switcher">
+      <label for="roleSelect">Switch View:</label>
+      <select id="roleSelect" [value]="user.role" (change)="onRoleChange($event)">
+        <option *ngFor="let r of roles" [value]="r">{{ r }}</option>
+      </select>
+    </div>
+
+    <div class="user-info">
+      <span class="username">{{ user.username }}</span>
+      <span class="role-badge" [ngClass]="user.role.toLowerCase().replace(' ', '-')">
+        {{ user.role }}
+      </span>
+    </div>
+    <button (click)="onLogout()" class="btn-logout">Logout</button>
+  </div>
+</header>

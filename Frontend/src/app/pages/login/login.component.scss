@@ -1,0 +1,120 @@
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  padding: 1.5rem;
+  box-sizing: border-box;
+
+  .login-card {
+    background: #ffffff;
+    width: 100%;
+    max-width: 420px;
+    padding: 2.5rem 2rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+
+    .brand {
+      text-align: center;
+      margin-bottom: 2rem;
+
+      .brand-icon {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 1.6rem;
+        color: #0f172a;
+        font-weight: 700;
+      }
+
+      p {
+        margin: 0.5rem 0 0;
+        color: #64748b;
+        font-size: 0.9rem;
+      }
+    }
+
+    .error-alert {
+      background-color: #fef2f2;
+      border: 1px solid #fca5a5;
+      color: #991b1b;
+      padding: 0.75rem;
+      border-radius: 6px;
+      margin-bottom: 1.25rem;
+      font-size: 0.875rem;
+      display: flex;
+      align-items: center;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+
+      label {
+        display: block;
+        margin-bottom: 0.4rem;
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: #334155;
+      }
+
+      input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        font-size: 0.95rem;
+        box-sizing: border-box;
+        transition: border-color 0.2s, box-shadow 0.2s;
+
+        &:focus {
+          outline: none;
+          border-color: #3b82f6;
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+        &:disabled {
+          background-color: #f1f5f9;
+          cursor: not-allowed;
+        }
+      }
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 0.8rem;
+      background-color: #2563eb;
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      margin-top: 0.5rem;
+
+      &:hover:not(:disabled) {
+        background-color: #1d4ed8;
+      }
+
+      &:disabled {
+        background-color: #93c5fd;
+        cursor: not-allowed;
+      }
+    }
+
+    .login-footer {
+      margin-top: 1.5rem;
+      text-align: center;
+
+      .hint {
+        font-size: 0.8rem;
+        color: #94a3b8;
+        margin: 0;
+      }
+    }
+  }
+}

@@ -1,0 +1,105 @@
+.reports-page {
+  .page-header {
+    margin-bottom: 1.5rem;
+    h1 { margin: 0; font-size: 1.6rem; color: #0f172a; }
+    .subtitle { margin: 0.25rem 0 0; color: #64748b; font-size: 0.9rem; }
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+
+    .stat-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+
+      .icon-wrap {
+        width: 46px; height: 46px; border-radius: 8px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.4rem; flex-shrink: 0;
+
+        &.blue { background: #eff6ff; }
+        &.yellow { background: #fefce8; }
+        &.green { background: #f0fdf4; }
+        &.red { background: #fef2f2; }
+      }
+
+      .stat-details {
+        .stat-val { display: block; font-size: 1.5rem; font-weight: 700; color: #0f172a; }
+        .stat-label { font-size: 0.8rem; color: #64748b; }
+      }
+    }
+  }
+
+  .table-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
+
+    .card-header {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid #e2e8f0;
+      h3 { margin: 0; font-size: 1.05rem; color: #0f172a; }
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+
+      th {
+        background-color: #f8fafc;
+        padding: 0.85rem 1rem;
+        text-align: left;
+        font-weight: 600;
+        color: #475569;
+        border-bottom: 1px solid #e2e8f0;
+      }
+
+      td {
+        padding: 0.85rem 1rem;
+        border-bottom: 1px solid #f1f5f9;
+        color: #334155;
+      }
+    }
+  }
+
+  .role-badge {
+    padding: 0.2rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    &.hr { background-color: #e0e7ff; color: #3730a3; }
+    &.manager { background-color: #fef3c7; color: #92400e; }
+    &.project-lead, &.projectlead { background-color: #dcfce7; color: #166534; }
+    &.employee { background-color: #f1f5f9; color: #475569; }
+  }
+
+  .rate-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    .progress-bar {
+      flex: 1; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden;
+      .progress-fill { height: 100%; background: #2563eb; border-radius: 4px; }
+    }
+    .rate-text { font-size: 0.8rem; font-weight: 700; width: 35px; }
+  }
+
+  .font-mono { font-family: monospace; }
+  .font-bold { font-weight: 600; }
+  .text-green { color: #16a34a; }
+  .text-yellow { color: #d97706; }
+  .text-red { color: #dc2626; }
+}

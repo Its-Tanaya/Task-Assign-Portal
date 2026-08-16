@@ -1,0 +1,114 @@
+<div class="salary-page">
+  <div class="page-header">
+    <div>
+      <h1>Salary Management</h1>
+      <p class="subtitle">View employee compensation, update salaries, and track historical changes</p>
+    </div>
+  </div>
+
+  <!-- Salary Table -->
+  <div class="table-card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>EMP Code</th>
+          <th>Employee Name</th>
+          <th>Role</th>
+          <th>Current Base Salary</th>
+          <th class="text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let emp of mockData.employees()">
+          <td class="font-mono">{{ emp.employeeCode }}</td>
+          <td class="font-bold">{{ emp.name }}</td>
+          <td>
+            <span class="role-badge" [ngClass]="emp.role.toLowerCase().replace(' ', '-')">
+              {{ emp.role }}
+            </span>
+          </td>
+          <td class="font-bold salary-amount">${{ emp.salary | number }}</td>
+          <td class="text-right actions-cell">
+            <button *ngIf="authService.getRole() === 'HR' || authService.getRole() === 'Manager'" (click)="openUpdateModal(emp)" class="btn-primary-sm">
+              Update Salary
+            </button>
+            <button (click)="openHistoryModal(emp)" class="btn-secondary-sm">
+              View History
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Update Salary Modal -->
+  <div *ngIf="showUpdateModal && selectedEmployee" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Update Salary - {{ selectedEmployee.name }}</h3>
+        <button (click)="closeUpdateModal()" class="btn-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Current Base Salary</label>
+          <input type="text" [value]="'$' + (selectedEmployee.salary | number)" disabled />
+        </div>
+        <div class="form-group">
+          <label>New Base Salary ($) *</label>
+          <input type="number" [(ngModel)]="newSalary" placeholder="Enter new salary amount" />
+        </div>
+        <div class="form-group">
+          <label>Reason / Audit Note</label>
+          <textarea [(ngModel)]="reason" rows="2" placeholder="e.g. Annual appraisal, promotion, role adjustment..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button (click)="closeUpdateModal()" class="btn-secondary">Cancel</button>
+        <button (click)="saveSalaryUpdate()" class="btn-primary">Save New Salary</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Salary History Modal -->
+  <div *ngIf="showHistoryModal && selectedEmployee" class="modal-backdrop">
+    <div class="modal-card wide">
+      <div class="modal-header">
+        <h3>Salary Audit History - {{ selectedEmployee.name }}</h3>
+        <button (click)="closeHistoryModal()" class="btn-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <table *ngIf="selectedHistory.length > 0" class="data-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Old Salary</th>
+              <th>New Salary</th>
+              <th>Change</th>
+              <th>Reason</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let h of selectedHistory">
+              <td>{{ h.changedAt }}</td>
+              <td>${{ h.oldSalary | number }}</td>
+              <td class="font-bold">${{ h.newSalary | number }}</td>
+              <td>
+                <span class="change-tag" [ngClass]="h.changeAmount >= 0 ? 'up' : 'down'">
+                  {{ h.changeAmount >= 0 ? '+' : '' }}${{ h.changeAmount | number }}
+                </span>
+              </td>
+              <td>{{ h.reason || 'No reason specified' }}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div *ngIf="selectedHistory.length === 0" class="empty-history">
+          <p>No historical salary changes recorded for this employee yet.</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button (click)="closeHistoryModal()" class="btn-secondary">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

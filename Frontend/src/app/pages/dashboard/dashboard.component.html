@@ -1,0 +1,112 @@
+<div class="dashboard-page">
+  <div class="welcome-header">
+    <div class="welcome-text">
+      <h1>Welcome back, {{ user?.username }}! 👋</h1>
+      <p>Active Portal Role: <span class="role-badge" [ngClass]="role?.toLowerCase()?.replace(' ', '-')">{{ role }}</span></p>
+    </div>
+    <div class="quick-nav">
+      <a routerLink="/tasks" class="btn-primary-sm">+ Tasks</a>
+      <a routerLink="/messages" class="btn-secondary-sm">💬 Messages</a>
+    </div>
+  </div>
+
+  <!-- Metric Overview Cards -->
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <div class="card-icon blue">👥</div>
+      <div class="card-data">
+        <span class="val">{{ totalEmployees }}</span>
+        <span class="lbl">Total Employees</span>
+      </div>
+    </div>
+
+    <div class="metric-card">
+      <div class="card-icon purple">📋</div>
+      <div class="card-data">
+        <span class="val">{{ totalTasks }}</span>
+        <span class="lbl">Total Tasks</span>
+      </div>
+    </div>
+
+    <div class="metric-card">
+      <div class="card-icon yellow">⏳</div>
+      <div class="card-data">
+        <span class="val">{{ pendingTasks }}</span>
+        <span class="lbl">Pending Tasks</span>
+      </div>
+    </div>
+
+    <div class="metric-card">
+      <div class="card-icon green">✅</div>
+      <div class="card-data">
+        <span class="val">{{ completedTasks }}</span>
+        <span class="lbl">Completed Tasks</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Role-Specific Portal Panels -->
+  <div class="panels-grid">
+    <!-- Recent Tasks Panel -->
+    <div class="panel-card main-panel">
+      <div class="panel-header">
+        <h3>Recent Portal Tasks</h3>
+        <a routerLink="/tasks" class="link-more">View All Tasks →</a>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Task ID</th>
+            <th>Title</th>
+            <th>Priority</th>
+            <th>Deadline</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let t of recentTasks">
+            <td class="font-mono">#{{ t.taskId }}</td>
+            <td class="font-bold">{{ t.title }}</td>
+            <td>
+              <span class="priority-tag" [ngClass]="t.priority.toLowerCase()">{{ t.priority }}</span>
+            </td>
+            <td>{{ t.deadline }}</td>
+            <td>
+              <span class="status-tag" [ngClass]="t.status.toLowerCase().replace(' ', '-')">{{ t.status }}</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Quick Shortcuts Panel -->
+    <div class="panel-card side-panel">
+      <div class="panel-header">
+        <h3>Portal Shortcuts</h3>
+      </div>
+      <div class="shortcuts-list">
+        <a routerLink="/employees" class="shortcut-item">
+          <span class="icon">👥</span>
+          <div>
+            <span class="title">Employee Management</span>
+            <span class="desc">Search, edit & view employees</span>
+          </div>
+        </a>
+        <a routerLink="/salary" class="shortcut-item">
+          <span class="icon">💰</span>
+          <div>
+            <span class="title">Salary Audit & History</span>
+            <span class="desc">Update compensation & logs</span>
+          </div>
+        </a>
+        <a routerLink="/reports" class="shortcut-item">
+          <span class="icon">📈</span>
+          <div>
+            <span class="title">Reports & Metrics</span>
+            <span class="desc">Employee performance report</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,201 @@
+<div class="employees-page">
+  <div class="page-header">
+    <div>
+      <h1>Employee Management</h1>
+      <p class="subtitle">View, search, add, edit and inspect employee records</p>
+    </div>
+    <button *ngIf="authService.getRole() === 'HR' || authService.getRole() === 'Manager'" (click)="openAddModal()" class="btn-primary">
+      + Add Employee
+    </button>
+  </div>
+
+  <!-- Search and Filters Bar -->
+  <div class="filter-bar">
+    <div class="search-input">
+      <span class="search-icon">🔍</span>
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        placeholder="Search by name, email or EMP code..."
+      />
+    </div>
+
+    <div class="role-filter">
+      <label>Filter Role:</label>
+      <select [(ngModel)]="roleFilter">
+        <option value="ALL">All Roles</option>
+        <option *ngFor="let r of roles" [value]="r">{{ r }}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Employee Table -->
+  <div class="table-card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Code</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Role</th>
+          <th>Salary</th>
+          <th>Joining Date</th>
+          <th class="text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let emp of filteredEmployees">
+          <td class="font-mono">{{ emp.employeeCode }}</td>
+          <td>
+            <span class="emp-name" (click)="openDetailModal(emp)">{{ emp.name }}</span>
+          </td>
+          <td>{{ emp.email }}</td>
+          <td>{{ emp.phone || 'N/A' }}</td>
+          <td>
+            <span class="role-badge" [ngClass]="emp.role.toLowerCase().replace(' ', '-')">
+              {{ emp.role }}
+            </span>
+          </td>
+          <td class="font-bold">${{ emp.salary | number }}</td>
+          <td>{{ emp.joiningDate }}</td>
+          <td class="text-right actions-cell">
+            <button (click)="openDetailModal(emp)" class="btn-icon" title="View Details">👁️</button>
+            <button *ngIf="authService.getRole() === 'HR' || authService.getRole() === 'Manager'" (click)="openEditModal(emp)" class="btn-icon" title="Edit">✏️</button>
+            <button *ngIf="authService.getRole() === 'HR'" (click)="deleteEmployee(emp.employeeId)" class="btn-icon danger" title="Delete">🗑️</button>
+          </td>
+        </tr>
+        <tr *ngIf="filteredEmployees.length === 0">
+          <td colspan="8" class="empty-row">No employees found matching filter criteria.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Add Employee Modal -->
+  <div *ngIf="showAddModal" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Add New Employee</h3>
+        <button (click)="closeAddModal()" class="btn-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Full Name *</label>
+          <input type="text" [(ngModel)]="formEmployee.name" placeholder="John Doe" />
+        </div>
+        <div class="form-group">
+          <label>Email Address *</label>
+          <input type="email" [(ngModel)]="formEmployee.email" placeholder="john.doe@portal.com" />
+        </div>
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="text" [(ngModel)]="formEmployee.phone" placeholder="+1 555-0100" />
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Role</label>
+            <select [(ngModel)]="formEmployee.role">
+              <option *ngFor="let r of roles" [value]="r">{{ r }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Salary ($)</label>
+            <input type="number" [(ngModel)]="formEmployee.salary" />
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button (click)="closeAddModal()" class="btn-secondary">Cancel</button>
+        <button (click)="saveAddEmployee()" class="btn-primary">Save Employee</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Employee Modal -->
+  <div *ngIf="showEditModal && selectedEmployee" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Edit Employee - {{ selectedEmployee.employeeCode }}</h3>
+        <button (click)="closeEditModal()" class="btn-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" [(ngModel)]="selectedEmployee.name" />
+        </div>
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" [(ngModel)]="selectedEmployee.email" />
+        </div>
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="text" [(ngModel)]="selectedEmployee.phone" />
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Role</label>
+            <select [(ngModel)]="selectedEmployee.role">
+              <option *ngFor="let r of roles" [value]="r">{{ r }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Salary ($)</label>
+            <input type="number" [(ngModel)]="selectedEmployee.salary" />
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button (click)="closeEditModal()" class="btn-secondary">Cancel</button>
+        <button (click)="saveEditEmployee()" class="btn-primary">Update Employee</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Details Modal -->
+  <div *ngIf="showDetailModal && selectedEmployee" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Employee Profile Details</h3>
+        <button (click)="closeDetailModal()" class="btn-close">✕</button>
+      </div>
+      <div class="modal-body details-body">
+        <div class="detail-row">
+          <span class="label">Employee Code:</span>
+          <span class="val font-mono">{{ selectedEmployee.employeeCode }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Name:</span>
+          <span class="val font-bold">{{ selectedEmployee.name }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Email:</span>
+          <span class="val">{{ selectedEmployee.email }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Phone:</span>
+          <span class="val">{{ selectedEmployee.phone || 'N/A' }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Role:</span>
+          <span class="val">
+            <span class="role-badge" [ngClass]="selectedEmployee.role.toLowerCase().replace(' ', '-')">
+              {{ selectedEmployee.role }}
+            </span>
+          </span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Base Salary:</span>
+          <span class="val font-bold">${{ selectedEmployee.salary | number }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Joining Date:</span>
+          <span class="val">{{ selectedEmployee.joiningDate }}</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button (click)="closeDetailModal()" class="btn-secondary">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

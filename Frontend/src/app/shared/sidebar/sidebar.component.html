@@ -1,0 +1,46 @@
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <span class="portal-tag">MAIN MENU</span>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
+      <span class="icon">📊</span>
+      <span>Dashboard</span>
+    </a>
+
+    <a *ngIf="isHr() || isManager() || isLead()" routerLink="/employees" routerLinkActive="active" class="nav-item">
+      <span class="icon">👥</span>
+      <span>Employees</span>
+    </a>
+
+    <a routerLink="/tasks" routerLinkActive="active" class="nav-item">
+      <span class="icon">✅</span>
+      <span>Tasks</span>
+    </a>
+
+    <a *ngIf="isHr() || isManager() || isEmployee()" routerLink="/salary" routerLinkActive="active" class="nav-item">
+      <span class="icon">💰</span>
+      <span>Salary</span>
+    </a>
+
+    <a routerLink="/messages" routerLinkActive="active" class="nav-item">
+      <span class="icon">💬</span>
+      <span>Messaging</span>
+    </a>
+
+    <a routerLink="/reports" routerLinkActive="active" class="nav-item">
+      <span class="icon">📈</span>
+      <span>Reports</span>
+    </a>
+
+    <a routerLink="/profile" routerLinkActive="active" class="nav-item">
+      <span class="icon">👤</span>
+      <span>My Profile</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <span class="user-role-label">Role: {{ role }}</span>
+  </div>
+</aside>
