@@ -2,7 +2,7 @@ export interface TaskAssignment {
   taskAssignmentId: number;
   taskId: number;
   employeeId: number;
-  status: string; // 'Pending' | 'In Progress' | 'Completed' | 'Overdue'
+  status: string;
   assignedDate: string;
   completedOn?: string;
 }

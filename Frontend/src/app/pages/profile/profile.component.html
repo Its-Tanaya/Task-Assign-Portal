@@ -1,7 +1,7 @@
 <div class="profile-page" *ngIf="currentEmployee as emp">
   <div class="page-header">
     <h1>My Personal Profile</h1>
-    <p class="subtitle">View your employee record, assigned role, and contact information</p>
+    <p class="subtitle">View your employee record, assigned role, department hierarchy, and contact information</p>
   </div>
 
   <div class="profile-card">
@@ -9,34 +9,61 @@
       <div class="avatar-large">{{ emp.name.substring(0, 1) }}</div>
       <div class="user-meta">
         <h2>{{ emp.name }}</h2>
-        <span class="role-badge" [ngClass]="emp.role.toLowerCase().replace(' ', '-')">{{ emp.role }}</span>
+        <div class="badge-group">
+          <span class="role-badge" [ngClass]="emp.role.toLowerCase().replace(' ', '-')">{{ emp.role }}</span>
+          <span class="status-badge" [ngClass]="emp.status.toLowerCase()">{{ emp.status }}</span>
+        </div>
       </div>
     </div>
 
     <div class="profile-details-grid">
       <div class="info-block">
+        <span class="info-label">Full Name</span>
+        <span class="info-value font-bold">{{ emp.name }}</span>
+      </div>
+      <div class="info-block">
+        <span class="info-label">System Employee ID</span>
+        <span class="info-value font-mono">#{{ emp.employeeId }}</span>
+      </div>
+      <div class="info-block">
         <span class="info-label">Employee Code</span>
-        <span class="info-value font-mono">{{ emp.employeeCode }}</span>
+        <span class="info-value font-mono font-bold">{{ emp.employeeCode }}</span>
       </div>
       <div class="info-block">
         <span class="info-label">Email Address</span>
-        <span class="info-value">{{ emp.email }}</span>
+        <span class="info-value text-blue">✉️ {{ emp.email }}</span>
       </div>
       <div class="info-block">
         <span class="info-label">Phone Number</span>
-        <span class="info-value">{{ emp.phone || 'N/A' }}</span>
+        <span class="info-value">📞 {{ emp.phone || 'N/A' }}</span>
       </div>
       <div class="info-block">
-        <span class="info-label">Department ID</span>
-        <span class="info-value">Department #{{ emp.departmentId }}</span>
+        <span class="info-label">Department</span>
+        <span class="info-value font-bold">{{ emp.department }}</span>
+      </div>
+      <div class="info-block">
+        <span class="info-label">Role / Designation</span>
+        <span class="info-value font-bold">{{ emp.role }}</span>
       </div>
       <div class="info-block">
         <span class="info-label">Base Compensation</span>
-        <span class="info-value font-bold text-green">${{ emp.salary | number }}</span>
+        <span class="info-value font-bold text-green">₹{{ emp.salary | number }}</span>
       </div>
       <div class="info-block">
-        <span class="info-label">Joining Date</span>
-        <span class="info-value">{{ emp.joiningDate }}</span>
+        <span class="info-label">Company Joining Date</span>
+        <span class="info-value font-bold">{{ emp.joiningDate }}</span>
+      </div>
+      <div class="info-block">
+        <span class="info-label">Reporting Manager</span>
+        <span class="info-value">👤 {{ emp.manager }}</span>
+      </div>
+      <div class="info-block">
+        <span class="info-label">Project Lead</span>
+        <span class="info-value">👨‍💻 {{ emp.projectLead }}</span>
+      </div>
+      <div class="info-block">
+        <span class="info-label">Account Status</span>
+        <span class="info-value font-bold" [ngClass]="emp.status.toLowerCase()">{{ emp.status }}</span>
       </div>
     </div>
   </div>

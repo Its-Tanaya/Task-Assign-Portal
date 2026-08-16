@@ -21,16 +21,20 @@
       <span class="val font-mono">{{ emp.employeeCode }}</span>
     </div>
     <div class="info-item">
-      <span class="lbl">Role:</span>
+      <span class="lbl">Employee ID:</span>
+      <span class="val font-mono">#{{ emp.employeeId }}</span>
+    </div>
+    <div class="info-item">
+      <span class="lbl">Role / Designation:</span>
       <span class="val font-bold">{{ emp.role }}</span>
     </div>
     <div class="info-item">
-      <span class="lbl">Department ID:</span>
-      <span class="val">Dept #{{ emp.departmentId }}</span>
+      <span class="lbl">Department:</span>
+      <span class="val font-bold">{{ emp.department }}</span>
     </div>
     <div class="info-item">
       <span class="lbl">Current Base Salary:</span>
-      <span class="val font-bold text-green">${{ emp.salary | number }}</span>
+      <span class="val font-bold text-green">₹{{ emp.salary | number }}</span>
     </div>
   </div>
 
@@ -75,7 +79,7 @@
     <div class="table-card">
       <div class="card-header">
         <h3>My Assigned Tasks</h3>
-        <a routerLink="/tasks" class="view-all">Manage All Tasks →</a>
+        <a routerLink="/tasks" class="view-all">Manage All My Tasks →</a>
       </div>
       <table class="data-table">
         <thead>

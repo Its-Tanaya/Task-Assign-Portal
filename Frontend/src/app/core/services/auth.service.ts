@@ -1,5 +1,4 @@
 import { Injectable, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { User, LoginRequest } from '../models/user.model';
 
@@ -9,10 +8,23 @@ import { User, LoginRequest } from '../models/user.model';
 export class AuthService {
   private storageKey = 'task_portal_user';
 
+  // Mock accounts mapping
+  private mockUsers: { [emailOrKey: string]: User } = {
+    'hr@taskassign.com': { userId: 1, username: 'Sarah Jenkins', role: 'HR' },
+    'manager@taskassign.com': { userId: 2, username: 'Michael Scott', role: 'Manager' },
+    'lead@taskassign.com': { userId: 3, username: 'Dwight Schrute', role: 'Project Lead' },
+    'employee@taskassign.com': { userId: 5, username: 'Rahul Patil', role: 'Employee' },
+    // Fallback role aliases
+    'hr': { userId: 1, username: 'Sarah Jenkins', role: 'HR' },
+    'manager': { userId: 2, username: 'Michael Scott', role: 'Manager' },
+    'lead': { userId: 3, username: 'Dwight Schrute', role: 'Project Lead' },
+    'employee': { userId: 5, username: 'Rahul Patil', role: 'Employee' }
+  };
+
   private defaultUser: User = {
-    userId: 1,
-    username: 'sarah_hr',
-    role: 'HR'
+    userId: 5,
+    username: 'Rahul Patil',
+    role: 'Employee'
   };
 
   currentUser = signal<User | null>(this.getStoredUser() || this.defaultUser);
@@ -20,18 +32,24 @@ export class AuthService {
   constructor() {}
 
   login(credentials: LoginRequest): Observable<User> {
-    // UI-only mock login response
-    let role = 'Employee';
-    const uname = credentials.username.toLowerCase();
-    if (uname.includes('hr')) role = 'HR';
-    else if (uname.includes('manager')) role = 'Manager';
-    else if (uname.includes('lead')) role = 'Project Lead';
+    const key = credentials.username.toLowerCase().trim();
+    let user: User;
 
-    const user: User = {
-      userId: Math.floor(Math.random() * 100) + 1,
-      username: credentials.username,
-      role: role
-    };
+    if (this.mockUsers[key]) {
+      user = this.mockUsers[key];
+    } else if (key.includes('hr')) {
+      user = this.mockUsers['hr@taskassign.com'];
+    } else if (key.includes('manager')) {
+      user = this.mockUsers['manager@taskassign.com'];
+    } else if (key.includes('lead')) {
+      user = this.mockUsers['lead@taskassign.com'];
+    } else {
+      user = {
+        userId: 5,
+        username: credentials.username,
+        role: 'Employee'
+      };
+    }
 
     this.setStoredUser(user);
     this.currentUser.set(user);
@@ -39,14 +57,14 @@ export class AuthService {
   }
 
   switchRole(role: string): void {
-    const current = this.currentUser();
-    const updated: User = {
-      userId: current?.userId || 1,
-      username: current?.username || 'test_user',
-      role: role
-    };
-    this.setStoredUser(updated);
-    this.currentUser.set(updated);
+    let targetUser: User;
+    if (role === 'HR') targetUser = this.mockUsers['hr@taskassign.com'];
+    else if (role === 'Manager') targetUser = this.mockUsers['manager@taskassign.com'];
+    else if (role === 'Project Lead') targetUser = this.mockUsers['lead@taskassign.com'];
+    else targetUser = this.mockUsers['employee@taskassign.com'];
+
+    this.setStoredUser(targetUser);
+    this.currentUser.set(targetUser);
   }
 
   logout(): void {

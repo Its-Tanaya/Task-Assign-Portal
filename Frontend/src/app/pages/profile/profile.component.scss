@@ -1,65 +1,79 @@
 .profile-page {
-  max-width: 800px;
+  max-width: 900px;
+  margin: 0 auto;
 
   .page-header {
     margin-bottom: 1.5rem;
-    h1 { margin: 0; font-size: 1.6rem; color: #0f172a; }
-    .subtitle { margin: 0.25rem 0 0; color: #64748b; font-size: 0.9rem; }
+    h1 { margin: 0 0 0.25rem; font-size: 1.5rem; color: #0f172a; }
+    .subtitle { margin: 0; font-size: 0.85rem; color: #64748b; }
   }
 
   .profile-card {
     background: #ffffff;
     border: 1px solid #e2e8f0;
-    border-radius: 10px;
+    border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
 
     .profile-header-banner {
       background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-      color: #ffffff;
       padding: 2rem;
+      color: #ffffff;
       display: flex;
       align-items: center;
       gap: 1.5rem;
 
       .avatar-large {
-        width: 64px; height: 64px; border-radius: 50%;
+        width: 70px; height: 70px; border-radius: 50%;
         background: #2563eb; color: #ffffff;
         display: flex; align-items: center; justify-content: center;
-        font-size: 1.8rem; font-weight: 700;
+        font-size: 2.2rem; font-weight: 800;
       }
 
       .user-meta {
-        h2 { margin: 0 0 0.5rem; font-size: 1.4rem; }
+        h2 { margin: 0 0 0.4rem; font-size: 1.6rem; }
+        .badge-group {
+          display: flex;
+          gap: 0.5rem;
+          align-items: center;
+        }
       }
     }
 
     .profile-details-grid {
-      padding: 2rem;
+      padding: 1.5rem;
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 1.5rem;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1.25rem;
 
       .info-block {
-        .info-label { display: block; font-size: 0.8rem; color: #64748b; margin-bottom: 0.25rem; }
-        .info-value { display: block; font-size: 0.95rem; color: #1e293b; font-weight: 500; }
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        background: #f8fafc;
+        padding: 0.85rem 1rem;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+
+        .info-label { font-size: 0.72rem; font-weight: 700; color: #64748b; text-transform: uppercase; }
+        .info-value { font-size: 0.9rem; color: #0f172a; }
       }
     }
   }
 
   .role-badge {
-    padding: 0.25rem 0.6rem;
-    border-radius: 12px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    &.hr { background-color: #e0e7ff; color: #3730a3; }
-    &.manager { background-color: #fef3c7; color: #92400e; }
-    &.project-lead, &.projectlead { background-color: #dcfce7; color: #166534; }
-    &.employee { background-color: #f1f5f9; color: #475569; }
+    padding: 0.2rem 0.6rem; border-radius: 10px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+    background: #e0e7ff; color: #3730a3;
+  }
+
+  .status-badge {
+    padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;
+    &.active { background: #dcfce7; color: #166534; }
+    &.inactive { background: #fee2e2; color: #991b1b; }
   }
 
   .font-mono { font-family: monospace; }
   .font-bold { font-weight: 600; }
   .text-green { color: #16a34a; }
+  .text-blue { color: #2563eb; }
 }

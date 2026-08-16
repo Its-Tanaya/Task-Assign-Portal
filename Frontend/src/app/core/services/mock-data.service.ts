@@ -177,7 +177,7 @@ export class MockDataService {
   assignments = signal<TaskAssignment[]>([
     { taskAssignmentId: 1, taskId: 101, employeeId: 4, status: 'In Progress', assignedDate: '2026-03-01' },
     { taskAssignmentId: 2, taskId: 102, employeeId: 1, status: 'Pending', assignedDate: '2026-03-05' },
-    { taskAssignmentId: 3, taskId: 103, employeeId: 2, status: 'Completed', assignedDate: '2026-03-10' },
+    { taskAssignmentId: 3, taskId: 103, employeeId: 2, status: 'Completed', assignedDate: '2026-03-10', completedOn: '2026-03-11' },
     { taskAssignmentId: 4, taskId: 104, employeeId: 5, status: 'In Progress', assignedDate: '2026-03-12' }
   ]);
 
@@ -201,6 +201,10 @@ export class MockDataService {
     return this.employees().find((e) => e.employeeId === id);
   }
 
+  getEmployeeByUserId(userId: number): Employee | undefined {
+    return this.employees().find((e) => e.userId === userId);
+  }
+
   addEmployee(emp: Partial<Employee>): Employee {
     const current = this.employees();
     const newId = current.length > 0 ? Math.max(...current.map((e) => e.employeeId)) + 1 : 1;
@@ -220,7 +224,7 @@ export class MockDataService {
       manager: emp.manager || 'Michael Scott',
       projectLead: emp.projectLead || 'Dwight Schrute',
       status: emp.status || 'Active',
-      userId: newId + 10
+      userId: emp.userId || newId + 10
     };
 
     this.employees.set([...current, newEmp]);
@@ -260,25 +264,22 @@ export class MockDataService {
     return newTask;
   }
 
-  assignTask(taskId: number, employeeId: number): void {
-    const current = this.assignments();
-    const existing = current.find((a) => a.taskId === taskId);
+  assignTaskToMultiple(taskId: number, employeeIds: number[]): void {
+    const current = [...this.assignments()];
     const today = new Date().toISOString().split('T')[0];
 
-    if (existing) {
-      existing.employeeId = employeeId;
-      this.assignments.set([...current]);
-    } else {
+    employeeIds.forEach((empId) => {
       const newAssignId = current.length > 0 ? Math.max(...current.map((a) => a.taskAssignmentId)) + 1 : 1;
-      const newAssign: TaskAssignment = {
+      current.push({
         taskAssignmentId: newAssignId,
         taskId,
-        employeeId,
+        employeeId: empId,
         status: 'Pending',
         assignedDate: today
-      };
-      this.assignments.set([...current, newAssign]);
-    }
+      });
+    });
+
+    this.assignments.set(current);
   }
 
   updateAssignmentStatus(taskAssignmentId: number, status: string): void {
@@ -286,6 +287,11 @@ export class MockDataService {
     const target = list.find((a) => a.taskAssignmentId === taskAssignmentId);
     if (target) {
       target.status = status;
+      if (status === 'Completed') {
+        target.completedOn = new Date().toISOString().split('T')[0];
+      } else {
+        delete target.completedOn;
+      }
       this.assignments.set(list);
     }
   }
