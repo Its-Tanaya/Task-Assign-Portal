@@ -1,0 +1,166 @@
+<div class="hr-dashboard">
+  <!-- Welcome Banner -->
+  <div class="welcome-banner">
+    <div class="banner-text">
+      <h2>Welcome back, {{ user?.username }}!</h2>
+      <p class="role-subtitle">HR Management & Workforce Overview Portal</p>
+    </div>
+    <div class="quick-actions">
+      <a routerLink="/employees" class="btn-action primary">+ Add Employee</a>
+      <a routerLink="/salary" class="btn-action secondary">💰 Manage Salaries</a>
+    </div>
+  </div>
+
+  <!-- Workforce & Task Metrics Grid -->
+  <div class="metrics-grid">
+    <div class="metric-card navy">
+      <div class="card-top">
+        <span class="icon">👥</span>
+        <span class="label">Total Employees</span>
+      </div>
+      <div class="card-val">{{ totalEmployees }}</div>
+      <div class="card-sub">{{ activeEmployees }} Active Staff Members</div>
+    </div>
+
+    <div class="metric-card blue">
+      <div class="card-top">
+        <span class="icon">📋</span>
+        <span class="label">Total Tasks</span>
+      </div>
+      <div class="card-val">{{ totalTasks }}</div>
+      <div class="card-sub">Company-wide assigned</div>
+    </div>
+
+    <div class="metric-card yellow">
+      <div class="card-top">
+        <span class="icon">⏳</span>
+        <span class="label">Pending</span>
+      </div>
+      <div class="card-val">{{ pendingTasks }}</div>
+      <div class="card-sub">Awaiting execution</div>
+    </div>
+
+    <div class="metric-card purple">
+      <div class="card-top">
+        <span class="icon">⚡</span>
+        <span class="label">In Progress</span>
+      </div>
+      <div class="card-val">{{ inProgressTasks }}</div>
+      <div class="card-sub">Currently underway</div>
+    </div>
+
+    <div class="metric-card green">
+      <div class="card-top">
+        <span class="icon">✅</span>
+        <span class="label">Completed</span>
+      </div>
+      <div class="card-val">{{ completedTasks }}</div>
+      <div class="card-sub">Finished tasks</div>
+    </div>
+
+    <div class="metric-card red">
+      <div class="card-top">
+        <span class="icon">⚠️</span>
+        <span class="label">Overdue</span>
+      </div>
+      <div class="card-val">{{ overdueTasks }}</div>
+      <div class="card-sub">Needs HR attention</div>
+    </div>
+  </div>
+
+  <!-- Tables Section -->
+  <div class="dashboard-tables-grid">
+    <!-- Recent Employees Card -->
+    <div class="table-card">
+      <div class="card-header">
+        <h3>Recent Employee Records</h3>
+        <a routerLink="/employees" class="view-all">Manage All →</a>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>EMP Code</th>
+            <th>Name</th>
+            <th>Role</th>
+            <th>Joining Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let emp of recentEmployees">
+            <td class="font-mono">{{ emp.employeeCode }}</td>
+            <td class="font-bold">{{ emp.name }}</td>
+            <td>
+              <span class="role-badge" [ngClass]="emp.role.toLowerCase().replace(' ', '-')">{{ emp.role }}</span>
+            </td>
+            <td>{{ emp.joiningDate }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Company Tasks Overview Card -->
+    <div class="table-card">
+      <div class="card-header">
+        <h3>Company Tasks Overview</h3>
+        <a routerLink="/tasks" class="view-all">View Tasks →</a>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Task Title</th>
+            <th>Priority</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let t of recentTasks">
+            <td class="font-mono">#{{ t.taskId }}</td>
+            <td class="font-bold">{{ t.title }}</td>
+            <td>
+              <span class="priority-tag" [ngClass]="t.priority.toLowerCase()">{{ t.priority }}</span>
+            </td>
+            <td>
+              <span class="status-tag" [ngClass]="t.status.toLowerCase().replace(' ', '-')">{{ t.status }}</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- HR Shortcuts Section -->
+  <div class="hr-shortcuts">
+    <h3>HR Management Shortcuts</h3>
+    <div class="shortcuts-grid">
+      <a routerLink="/employees" class="shortcut-box">
+        <span class="icon">👥</span>
+        <div>
+          <h4>Employee Management</h4>
+          <p>Add, search, edit and remove workforce profiles</p>
+        </div>
+      </a>
+      <a routerLink="/salary" class="shortcut-box">
+        <span class="icon">💰</span>
+        <div>
+          <h4>Salary & Audit Logs</h4>
+          <p>Update base compensation and view history</p>
+        </div>
+      </a>
+      <a routerLink="/messages" class="shortcut-box">
+        <span class="icon">💬</span>
+        <div>
+          <h4>HR Direct Messaging</h4>
+          <p>Communicate with managers and staff</p>
+        </div>
+      </a>
+      <a routerLink="/reports" class="shortcut-box">
+        <span class="icon">📊</span>
+        <div>
+          <h4>Performance Reports</h4>
+          <p>Company-wide task completion metrics</p>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>

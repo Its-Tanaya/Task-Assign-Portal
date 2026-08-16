@@ -1,0 +1,63 @@
+Initial chunk files   | Names         |  Raw size | Estimated transfer size
+main-EKO2HOIV.js      | main          | 435.62 kB |                90.38 kB
+polyfills-FFHMD2TL.js | polyfills     |  33.71 kB |                11.02 kB
+styles-5INURTSO.css   | styles        |   0 bytes |                 0 bytes
+
+                      | Initial total | 469.33 kB |               101.40 kB
+
+Application bundle generation failed. [9.113 seconds]
+
+
+- Building...
+
+▲ [WARNING] src/app/pages/login/login.component.scss exceeded maximum budget. Budget 2.00 kB was not met by 5 bytes with a total of 2.00 kB.
+
+
+▲ [WARNING] src/app/pages/tasks/tasks.component.scss exceeded maximum budget. Budget 2.00 kB was not met by 3.29 kB with a total of 5.29 kB.
+
+
+▲ [WARNING] src/app/pages/employees/employees.component.scss exceeded maximum budget. Budget 2.00 kB was not met by 2.98 kB with a total of 4.98 kB.
+
+
+▲ [WARNING] src/app/pages/dashboard/lead-dashboard/lead-dashboard.component.scss exceeded maximum budget. Budget 2.00 kB was not met by 3.10 kB with a total of 5.10 kB.
+
+
+▲ [WARNING] src/app/pages/dashboard/hr-dashboard/hr-dashboard.component.scss exceeded maximum budget. Budget 2.00 kB was not met by 3.31 kB with a total of 5.31 kB.
+
+
+▲ [WARNING] src/app/pages/salary/salary.component.scss exceeded maximum budget. Budget 2.00 kB was not met by 1.96 kB with a total of 3.96 kB.
+
+
+▲ [WARNING] src/app/pages/reports/reports.component.scss exceeded maximum budget. Budget 2.00 kB was not met by 808 bytes with a total of 2.79 kB.
+
+
+▲ [WARNING] src/app/pages/dashboard/manager-dashboard/manager-dashboard.component.scss exceeded maximum budget. Budget 2.00 kB was not met by 3.25 kB with a total of 5.25 kB.
+
+
+▲ [WARNING] src/app/pages/messages/messages.component.scss exceeded maximum budget. Budget 2.00 kB was not met by 2.67 kB with a total of 4.67 kB.
+
+
+▲ [WARNING] src/app/pages/dashboard/employee-dashboard/employee-dashboard.component.scss exceeded maximum budget. Budget 2.00 kB was not met by 4.74 kB with a total of 6.74 kB.
+
+
+X [ERROR] src/app/pages/tasks/tasks.component.scss exceeded maximum budget. Budget 4.00 kB was not met by 1.29 kB with a total of 5.29 kB.
+
+
+X [ERROR] src/app/pages/employees/employees.component.scss exceeded maximum budget. Budget 4.00 kB was not met by 1002 bytes with a total of 4.98 kB.
+
+
+X [ERROR] src/app/pages/dashboard/lead-dashboard/lead-dashboard.component.scss exceeded maximum budget. Budget 4.00 kB was not met by 1.10 kB with a total of 5.10 kB.
+
+
+X [ERROR] src/app/pages/dashboard/hr-dashboard/hr-dashboard.component.scss exceeded maximum budget. Budget 4.00 kB was not met by 1.31 kB with a total of 5.31 kB.
+
+
+X [ERROR] src/app/pages/dashboard/manager-dashboard/manager-dashboard.component.scss exceeded maximum budget. Budget 4.00 kB was not met by 1.25 kB with a total of 5.25 kB.
+
+
+X [ERROR] src/app/pages/messages/messages.component.scss exceeded maximum budget. Budget 4.00 kB was not met by 682 bytes with a total of 4.67 kB.
+
+
+X [ERROR] src/app/pages/dashboard/employee-dashboard/employee-dashboard.component.scss exceeded maximum budget. Budget 4.00 kB was not met by 2.74 kB with a total of 6.74 kB.
+
+

@@ -1,0 +1,152 @@
+.manager-dashboard {
+  .welcome-banner {
+    background: linear-gradient(135deg, #78350f 0%, #92400e 100%);
+    color: #ffffff;
+    padding: 1.75rem 2rem;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+
+    .banner-text {
+      h2 { margin: 0 0 0.35rem; font-size: 1.5rem; }
+      .subtitle { margin: 0; color: #fef3c7; font-size: 0.9rem; }
+    }
+
+    .quick-actions {
+      display: flex;
+      gap: 0.75rem;
+
+      .btn-action {
+        text-decoration: none;
+        padding: 0.6rem 1.2rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        transition: all 0.2s;
+
+        &.primary { background: #d97706; color: #ffffff; &:hover { background: #b45309; } }
+        &.secondary { background: rgba(255,255,255,0.15); color: #ffffff; &:hover { background: rgba(255,255,255,0.25); } }
+      }
+    }
+  }
+
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+
+    .metric-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+
+      .card-icon { font-size: 1.5rem; }
+
+      .card-info {
+        .val { display: block; font-size: 1.4rem; font-weight: 800; color: #0f172a; }
+        .lbl { font-size: 0.75rem; color: #64748b; font-weight: 600; }
+      }
+
+      &.amber { border-left: 4px solid #d97706; }
+      &.blue { border-left: 4px solid #2563eb; }
+      &.yellow { border-left: 4px solid #ca8a04; }
+      &.purple { border-left: 4px solid #9333ea; }
+      &.green { border-left: 4px solid #16a34a; }
+      &.red { border-left: 4px solid #dc2626; }
+    }
+  }
+
+  .manager-content-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.5rem;
+
+    .table-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      overflow: hidden;
+
+      .card-header {
+        padding: 1rem 1.25rem;
+        background: #fffbeb;
+        border-bottom: 1px solid #fef3c7;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        h3 { margin: 0; font-size: 1rem; color: #78350f; }
+        .view-all { font-size: 0.8rem; color: #d97706; text-decoration: none; font-weight: 600; }
+      }
+
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+
+        th { padding: 0.75rem 1rem; text-align: left; background: #ffffff; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0; }
+        td { padding: 0.75rem 1rem; border-bottom: 1px solid #f1f5f9; color: #334155; }
+      }
+    }
+
+    .side-panel {
+      .panel-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 1.25rem;
+
+        h3 { margin: 0 0 1rem; font-size: 1.05rem; color: #0f172a; }
+
+        .actions-list {
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+
+          .action-item {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            padding: 0.85rem;
+            border: 1px solid #f1f5f9;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.15s;
+
+            &:hover { background: #fffbeb; border-color: #fde68a; }
+
+            .icon { font-size: 1.3rem; }
+            .title { display: block; font-weight: 600; font-size: 0.875rem; color: #1e293b; }
+            .desc { display: block; font-size: 0.75rem; color: #64748b; }
+          }
+        }
+      }
+    }
+  }
+
+  .priority-tag {
+    padding: 0.15rem 0.45rem; border-radius: 4px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+    &.low { background-color: #f1f5f9; color: #475569; }
+    &.medium { background-color: #e0f2fe; color: #0369a1; }
+    &.high { background-color: #ffedd5; color: #c2410c; }
+    &.critical { background-color: #fef2f2; color: #b91c1c; }
+  }
+
+  .status-tag {
+    padding: 0.15rem 0.45rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700;
+    &.pending { background-color: #fef3c7; color: #92400e; }
+    &.in-progress { background-color: #dbeafe; color: #1e40af; }
+    &.completed { background-color: #dcfce7; color: #166534; }
+    &.overdue { background-color: #fee2e2; color: #991b1b; }
+  }
+
+  .font-bold { font-weight: 600; }
+}

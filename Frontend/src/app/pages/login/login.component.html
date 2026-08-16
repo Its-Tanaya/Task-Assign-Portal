@@ -6,7 +6,7 @@
       <p>Sign in to access your portal</p>
     </div>
 
-    <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+    <form (ngSubmit)="onLogin()" #loginForm="ngForm">
       <div *ngIf="errorMessage" class="error-alert">
         <span>⚠️ {{ errorMessage }}</span>
       </div>
@@ -20,7 +20,7 @@
           [(ngModel)]="username"
           placeholder="Enter username"
           required
-          [disabled]="isLoading"
+          [disabled]="loading"
         />
       </div>
 
@@ -33,13 +33,25 @@
           [(ngModel)]="password"
           placeholder="Enter password"
           required
-          [disabled]="isLoading"
+          [disabled]="loading"
         />
       </div>
 
-      <button type="submit" class="btn-primary" [disabled]="isLoading">
-        <span *ngIf="!isLoading">Login</span>
-        <span *ngIf="isLoading">Logging in...</span>
+      <div class="form-group">
+        <label for="selectedRole">Login Role View</label>
+        <select
+          id="selectedRole"
+          name="selectedRole"
+          [(ngModel)]="selectedRole"
+          [disabled]="loading"
+        >
+          <option *ngFor="let r of roles" [value]="r">{{ r }}</option>
+        </select>
+      </div>
+
+      <button type="submit" class="btn-primary" [disabled]="loading">
+        <span *ngIf="!loading">Login</span>
+        <span *ngIf="loading">Logging in...</span>
       </button>
     </form>
 

@@ -21,8 +21,23 @@ export class TopnavComponent {
 
   onRoleChange(event: Event): void {
     const select = event.target as HTMLSelectElement;
-    if (select.value) {
-      this.authService.switchRole(select.value);
+    const newRole = select.value;
+    if (newRole) {
+      this.authService.switchRole(newRole);
+      switch (newRole) {
+        case 'HR':
+          this.router.navigate(['/hr/dashboard']);
+          break;
+        case 'Manager':
+          this.router.navigate(['/manager/dashboard']);
+          break;
+        case 'Project Lead':
+          this.router.navigate(['/lead/dashboard']);
+          break;
+        default:
+          this.router.navigate(['/employee/dashboard']);
+          break;
+      }
     }
   }
 

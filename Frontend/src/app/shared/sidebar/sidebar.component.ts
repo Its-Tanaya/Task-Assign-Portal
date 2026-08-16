@@ -14,7 +14,20 @@ export class SidebarComponent {
   constructor(public authService: AuthService) {}
 
   get role(): string {
-    return this.authService.getRole() || '';
+    return this.authService.getRole() || 'Employee';
+  }
+
+  get dashboardRoute(): string {
+    switch (this.role) {
+      case 'HR':
+        return '/hr/dashboard';
+      case 'Manager':
+        return '/manager/dashboard';
+      case 'Project Lead':
+        return '/lead/dashboard';
+      default:
+        return '/employee/dashboard';
+    }
   }
 
   isHr(): boolean {

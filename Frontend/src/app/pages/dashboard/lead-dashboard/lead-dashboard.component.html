@@ -1,0 +1,143 @@
+<div class="lead-dashboard">
+  <!-- Welcome Banner -->
+  <div class="welcome-banner">
+    <div class="banner-text">
+      <h2>Project Lead Portal - Hello, {{ user?.username }}</h2>
+      <p class="subtitle">Drive technical deliverables, sprint deadlines, and task execution</p>
+    </div>
+    <div class="quick-actions">
+      <a routerLink="/tasks" class="btn-action primary">+ Create & Assign Task</a>
+      <a routerLink="/messages" class="btn-action secondary">💬 Team Discussion</a>
+    </div>
+  </div>
+
+  <!-- Project Lead Sprint Metrics -->
+  <div class="metrics-grid">
+    <div class="metric-card green">
+      <div class="card-head">
+        <span class="icon">💻</span>
+        <span class="label">Project Team</span>
+      </div>
+      <div class="val">{{ projectTeamCount }}</div>
+      <div class="sub">Active Engineers & Lead Staff</div>
+    </div>
+
+    <div class="metric-card blue">
+      <div class="card-head">
+        <span class="icon">🚀</span>
+        <span class="label">Project Tasks</span>
+      </div>
+      <div class="val">{{ totalProjectTasks }}</div>
+      <div class="sub">Total task backlog</div>
+    </div>
+
+    <div class="metric-card yellow">
+      <div class="card-head">
+        <span class="icon">⏳</span>
+        <span class="label">Pending</span>
+      </div>
+      <div class="val">{{ pendingTasks }}</div>
+      <div class="sub">Queued for development</div>
+    </div>
+
+    <div class="metric-card purple">
+      <div class="card-head">
+        <span class="icon">⚡</span>
+        <span class="label">In Progress</span>
+      </div>
+      <div class="val">{{ inProgressTasks }}</div>
+      <div class="sub">Active engineering work</div>
+    </div>
+
+    <div class="metric-card teal">
+      <div class="card-head">
+        <span class="icon">✅</span>
+        <span class="label">Completed</span>
+      </div>
+      <div class="val">{{ completedTasks }}</div>
+      <div class="sub">Successfully deployed</div>
+    </div>
+
+    <div class="metric-card red">
+      <div class="card-head">
+        <span class="icon">⚠️</span>
+        <span class="label">Overdue</span>
+      </div>
+      <div class="val">{{ overdueTasks }}</div>
+      <div class="sub">Requires immediate fix</div>
+    </div>
+  </div>
+
+  <!-- Project Tasks Stream & Lead Actions -->
+  <div class="lead-content-grid">
+    <div class="table-card">
+      <div class="card-header">
+        <h3>Project Tasks Stream</h3>
+        <a routerLink="/tasks" class="view-all">Full Task Board →</a>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Task Title</th>
+            <th>Priority</th>
+            <th>Developer / Assignee</th>
+            <th>Deadline</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let row of projectTasks">
+            <td class="font-mono">#{{ row.task.taskId }}</td>
+            <td class="font-bold">{{ row.task.title }}</td>
+            <td>
+              <span class="priority-tag" [ngClass]="row.task.priority.toLowerCase()">{{ row.task.priority }}</span>
+            </td>
+            <td class="font-bold">👨‍💻 {{ row.assignee }}</td>
+            <td>{{ row.task.deadline }}</td>
+            <td>
+              <span class="status-tag" [ngClass]="row.status.toLowerCase().replace(' ', '-')">{{ row.status }}</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Lead Quick Actions Card -->
+    <div class="side-panel">
+      <div class="panel-card">
+        <h3>Lead Quick Actions</h3>
+        <div class="actions-list">
+          <a routerLink="/tasks" class="action-box">
+            <span class="icon">➕</span>
+            <div>
+              <span class="title">Create Task</span>
+              <span class="desc">Define new user story or bug</span>
+            </div>
+          </a>
+          <a routerLink="/tasks" class="action-box">
+            <span class="icon">📌</span>
+            <div>
+              <span class="title">Assign Task</span>
+              <span class="desc">Delegate tasks to team members</span>
+            </div>
+          </a>
+          <a routerLink="/employees" class="action-box">
+            <span class="icon">👥</span>
+            <div>
+              <span class="title">View Project Team</span>
+              <span class="desc">Check developer availability</span>
+            </div>
+          </a>
+          <a routerLink="/messages" class="action-box">
+            <span class="icon">💬</span>
+            <div>
+              <span class="title">Lead Messages</span>
+              <span class="desc">Technical chat & updates</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

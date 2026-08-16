@@ -14,40 +14,54 @@ import { AuthService } from '../../core/services/auth.service';
 export class LoginComponent {
   username = '';
   password = '';
+  selectedRole = 'HR';
+
   errorMessage = '';
-  isLoading = false;
+  loading = false;
+
+  roles = ['HR', 'Manager', 'Project Lead', 'Employee'];
 
   constructor(
     private authService: AuthService,
     private router: Router
-  ) {
-    // If already logged in, redirect to dashboard
-    if (this.authService.isLoggedIn()) {
-      this.router.navigate(['/dashboard']);
-    }
-  }
+  ) {}
 
-  onSubmit(): void {
-    if (!this.username || !this.password) {
-      this.errorMessage = 'Please enter both username and password.';
+  onLogin(): void {
+    if (!this.username) {
+      this.errorMessage = 'Please enter a username.';
       return;
     }
 
+    this.loading = true;
     this.errorMessage = '';
-    this.isLoading = true;
 
-    this.authService.login({ username: this.username, password: this.password }).subscribe({
+    this.authService.login({
+      username: this.username,
+      password: this.password
+    }).subscribe({
       next: (user) => {
-        this.isLoading = false;
-        this.router.navigate(['/dashboard']);
-      },
-      error: (err) => {
-        this.isLoading = false;
-        if (err.status === 401) {
-          this.errorMessage = 'Invalid username or password.';
-        } else {
-          this.errorMessage = err?.error || 'Failed to login. Please check server connection.';
+        // Apply selected role for demo testing
+        this.authService.switchRole(this.selectedRole);
+        this.loading = false;
+
+        switch (this.selectedRole) {
+          case 'HR':
+            this.router.navigate(['/hr/dashboard']);
+            break;
+          case 'Manager':
+            this.router.navigate(['/manager/dashboard']);
+            break;
+          case 'Project Lead':
+            this.router.navigate(['/lead/dashboard']);
+            break;
+          default:
+            this.router.navigate(['/employee/dashboard']);
+            break;
         }
+      },
+      error: () => {
+        this.loading = false;
+        this.errorMessage = 'Login failed. Please check credentials.';
       }
     });
   }

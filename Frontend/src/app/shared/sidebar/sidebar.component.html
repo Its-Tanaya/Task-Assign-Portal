@@ -1,42 +1,113 @@
 <aside class="sidebar">
   <div class="sidebar-header">
-    <span class="portal-tag">MAIN MENU</span>
+    <span class="portal-tag">{{ role.toUpperCase() }} PORTAL</span>
   </div>
 
-  <nav class="sidebar-nav">
-    <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
+  <!-- HR Sidebar Navigation -->
+  <nav class="sidebar-nav" *ngIf="isHr()">
+    <a [routerLink]="dashboardRoute" routerLinkActive="active" class="nav-item">
       <span class="icon">📊</span>
       <span>Dashboard</span>
     </a>
-
-    <a *ngIf="isHr() || isManager() || isLead()" routerLink="/employees" routerLinkActive="active" class="nav-item">
+    <a routerLink="/employees" routerLinkActive="active" class="nav-item">
       <span class="icon">👥</span>
       <span>Employees</span>
     </a>
-
     <a routerLink="/tasks" routerLinkActive="active" class="nav-item">
-      <span class="icon">✅</span>
+      <span class="icon">📋</span>
       <span>Tasks</span>
     </a>
-
-    <a *ngIf="isHr() || isManager() || isEmployee()" routerLink="/salary" routerLinkActive="active" class="nav-item">
+    <a routerLink="/salary" routerLinkActive="active" class="nav-item">
       <span class="icon">💰</span>
-      <span>Salary</span>
+      <span>Salary Management</span>
     </a>
-
+    <a routerLink="/salary" routerLinkActive="active" class="nav-item">
+      <span class="icon">📜</span>
+      <span>Salary History</span>
+    </a>
     <a routerLink="/messages" routerLinkActive="active" class="nav-item">
       <span class="icon">💬</span>
-      <span>Messaging</span>
+      <span>Messages</span>
     </a>
-
     <a routerLink="/reports" routerLinkActive="active" class="nav-item">
       <span class="icon">📈</span>
       <span>Reports</span>
     </a>
+  </nav>
 
+  <!-- Manager Sidebar Navigation -->
+  <nav class="sidebar-nav" *ngIf="isManager()">
+    <a [routerLink]="dashboardRoute" routerLinkActive="active" class="nav-item">
+      <span class="icon">📊</span>
+      <span>Dashboard</span>
+    </a>
+    <a routerLink="/employees" routerLinkActive="active" class="nav-item">
+      <span class="icon">👥</span>
+      <span>My Employees</span>
+    </a>
+    <a routerLink="/tasks" routerLinkActive="active" class="nav-item">
+      <span class="icon">📋</span>
+      <span>Tasks</span>
+    </a>
+    <a routerLink="/tasks" routerLinkActive="active" class="nav-item">
+      <span class="icon">📌</span>
+      <span>Assign Task</span>
+    </a>
+    <a routerLink="/messages" routerLinkActive="active" class="nav-item">
+      <span class="icon">💬</span>
+      <span>Messages</span>
+    </a>
+    <a routerLink="/reports" routerLinkActive="active" class="nav-item">
+      <span class="icon">📈</span>
+      <span>Reports</span>
+    </a>
+  </nav>
+
+  <!-- Project Lead Sidebar Navigation -->
+  <nav class="sidebar-nav" *ngIf="isLead()">
+    <a [routerLink]="dashboardRoute" routerLinkActive="active" class="nav-item">
+      <span class="icon">📊</span>
+      <span>Dashboard</span>
+    </a>
+    <a routerLink="/employees" routerLinkActive="active" class="nav-item">
+      <span class="icon">💻</span>
+      <span>My Team</span>
+    </a>
+    <a routerLink="/tasks" routerLinkActive="active" class="nav-item">
+      <span class="icon">🚀</span>
+      <span>Tasks</span>
+    </a>
+    <a routerLink="/tasks" routerLinkActive="active" class="nav-item">
+      <span class="icon">📌</span>
+      <span>Assign Task</span>
+    </a>
+    <a routerLink="/messages" routerLinkActive="active" class="nav-item">
+      <span class="icon">💬</span>
+      <span>Messages</span>
+    </a>
+    <a routerLink="/reports" routerLinkActive="active" class="nav-item">
+      <span class="icon">📈</span>
+      <span>Reports</span>
+    </a>
+  </nav>
+
+  <!-- Employee Sidebar Navigation -->
+  <nav class="sidebar-nav" *ngIf="isEmployee()">
+    <a [routerLink]="dashboardRoute" routerLinkActive="active" class="nav-item">
+      <span class="icon">📊</span>
+      <span>Dashboard</span>
+    </a>
     <a routerLink="/profile" routerLinkActive="active" class="nav-item">
       <span class="icon">👤</span>
       <span>My Profile</span>
+    </a>
+    <a routerLink="/tasks" routerLinkActive="active" class="nav-item">
+      <span class="icon">📋</span>
+      <span>My Tasks</span>
+    </a>
+    <a routerLink="/messages" routerLinkActive="active" class="nav-item">
+      <span class="icon">💬</span>
+      <span>Messages</span>
     </a>
   </nav>
 

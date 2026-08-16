@@ -1,0 +1,135 @@
+<div class="manager-dashboard">
+  <!-- Welcome Banner -->
+  <div class="welcome-banner">
+    <div class="banner-text">
+      <h2>Manager Workspace - Welcome, {{ user?.username }}</h2>
+      <p class="subtitle">Supervise team members, assign tasks, and track department progress</p>
+    </div>
+    <div class="quick-actions">
+      <a routerLink="/tasks" class="btn-action primary">📌 Assign New Task</a>
+      <a routerLink="/employees" class="btn-action secondary">👥 View Team Members</a>
+    </div>
+  </div>
+
+  <!-- Manager Team Metrics -->
+  <div class="metrics-grid">
+    <div class="metric-card amber">
+      <div class="card-icon">👥</div>
+      <div class="card-info">
+        <span class="val">{{ teamMembersCount }}</span>
+        <span class="lbl">Total Team Members</span>
+      </div>
+    </div>
+
+    <div class="metric-card blue">
+      <div class="card-icon">📋</div>
+      <div class="card-info">
+        <span class="val">{{ totalTeamTasks }}</span>
+        <span class="lbl">Assigned Team Tasks</span>
+      </div>
+    </div>
+
+    <div class="metric-card yellow">
+      <div class="card-icon">⏳</div>
+      <div class="card-info">
+        <span class="val">{{ pendingTasks }}</span>
+        <span class="lbl">Pending Tasks</span>
+      </div>
+    </div>
+
+    <div class="metric-card purple">
+      <div class="card-icon">⚡</div>
+      <div class="card-info">
+        <span class="val">{{ inProgressTasks }}</span>
+        <span class="lbl">In Progress</span>
+      </div>
+    </div>
+
+    <div class="metric-card green">
+      <div class="card-icon">✅</div>
+      <div class="card-info">
+        <span class="val">{{ completedTasks }}</span>
+        <span class="lbl">Completed Tasks</span>
+      </div>
+    </div>
+
+    <div class="metric-card red">
+      <div class="card-icon">⚠️</div>
+      <div class="card-info">
+        <span class="val">{{ overdueTasks }}</span>
+        <span class="lbl">Overdue Tasks</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Team Tasks Table & Quick Actions -->
+  <div class="manager-content-grid">
+    <div class="table-card">
+      <div class="card-header">
+        <h3>Recent Team Task Assignments</h3>
+        <a routerLink="/tasks" class="view-all">All Tasks →</a>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Task</th>
+            <th>Priority</th>
+            <th>Assigned To</th>
+            <th>Deadline</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let row of teamTaskRows">
+            <td class="font-bold">{{ row.task.title }}</td>
+            <td>
+              <span class="priority-tag" [ngClass]="row.task.priority.toLowerCase()">{{ row.task.priority }}</span>
+            </td>
+            <td class="font-bold">👤 {{ row.assignee }}</td>
+            <td>{{ row.task.deadline }}</td>
+            <td>
+              <span class="status-tag" [ngClass]="row.status.toLowerCase().replace(' ', '-')">{{ row.status }}</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Manager Actions Sidebar Card -->
+    <div class="side-panel">
+      <div class="panel-card">
+        <h3>Manager Actions</h3>
+        <div class="actions-list">
+          <a routerLink="/tasks" class="action-item">
+            <span class="icon">📌</span>
+            <div>
+              <span class="title">Task Assignment</span>
+              <span class="desc">Assign tasks to department members</span>
+            </div>
+          </a>
+          <a routerLink="/employees" class="action-item">
+            <span class="icon">👥</span>
+            <div>
+              <span class="title">My Employees</span>
+              <span class="desc">Review team directory & roles</span>
+            </div>
+          </a>
+          <a routerLink="/messages" class="action-item">
+            <span class="icon">💬</span>
+            <div>
+              <span class="title">Direct Messaging</span>
+              <span class="desc">Send updates to team members</span>
+            </div>
+          </a>
+          <a routerLink="/reports" class="action-item">
+            <span class="icon">📊</span>
+            <div>
+              <span class="title">Team Performance</span>
+              <span class="desc">Track completion statistics</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,142 @@
+<div class="employee-dashboard" *ngIf="currentEmployee as emp">
+  <!-- Welcome Banner -->
+  <div class="welcome-banner">
+    <div class="banner-left">
+      <div class="avatar">{{ emp.name.substring(0, 1) }}</div>
+      <div>
+        <h2>Welcome, {{ emp.name }}!</h2>
+        <p class="subtitle">Employee Portal & Personal Workspace</p>
+      </div>
+    </div>
+    <div class="quick-actions">
+      <a routerLink="/tasks" class="btn-action primary">📋 View My Tasks</a>
+      <a routerLink="/profile" class="btn-action secondary">👤 My Profile</a>
+    </div>
+  </div>
+
+  <!-- Employee Info Summary Strip -->
+  <div class="emp-info-strip">
+    <div class="info-item">
+      <span class="lbl">Employee Code:</span>
+      <span class="val font-mono">{{ emp.employeeCode }}</span>
+    </div>
+    <div class="info-item">
+      <span class="lbl">Role:</span>
+      <span class="val font-bold">{{ emp.role }}</span>
+    </div>
+    <div class="info-item">
+      <span class="lbl">Department ID:</span>
+      <span class="val">Dept #{{ emp.departmentId }}</span>
+    </div>
+    <div class="info-item">
+      <span class="lbl">Current Base Salary:</span>
+      <span class="val font-bold text-green">${{ emp.salary | number }}</span>
+    </div>
+  </div>
+
+  <!-- Personal Task Metrics -->
+  <div class="metrics-grid">
+    <div class="metric-card yellow">
+      <div class="card-icon">⏳</div>
+      <div class="card-info">
+        <span class="val">{{ myPendingCount }}</span>
+        <span class="lbl">My Pending Tasks</span>
+      </div>
+    </div>
+
+    <div class="metric-card blue">
+      <div class="card-icon">⚡</div>
+      <div class="card-info">
+        <span class="val">{{ myInProgressCount }}</span>
+        <span class="lbl">In Progress</span>
+      </div>
+    </div>
+
+    <div class="metric-card green">
+      <div class="card-icon">✅</div>
+      <div class="card-info">
+        <span class="val">{{ myCompletedCount }}</span>
+        <span class="lbl">Completed Tasks</span>
+      </div>
+    </div>
+
+    <div class="metric-card red">
+      <div class="card-icon">⚠️</div>
+      <div class="card-info">
+        <span class="val">{{ myOverdueCount }}</span>
+        <span class="lbl">Overdue Tasks</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- My Tasks & Direct Messages Layout -->
+  <div class="emp-content-grid">
+    <!-- My Tasks Table -->
+    <div class="table-card">
+      <div class="card-header">
+        <h3>My Assigned Tasks</h3>
+        <a routerLink="/tasks" class="view-all">Manage All Tasks →</a>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Task Title</th>
+            <th>Priority</th>
+            <th>Deadline</th>
+            <th>Update Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of myAssignments">
+            <td class="font-bold">{{ item.task.title }}</td>
+            <td>
+              <span class="priority-tag" [ngClass]="item.task.priority.toLowerCase()">{{ item.task.priority }}</span>
+            </td>
+            <td>{{ item.task.deadline }}</td>
+            <td>
+              <select
+                [value]="item.assignment.status"
+                (change)="updateMyTaskStatus(item.assignment.taskAssignmentId, $event)"
+                class="status-select"
+                [ngClass]="item.assignment.status.toLowerCase().replace(' ', '-')"
+              >
+                <option value="Pending">Pending</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+                <option value="Overdue">Overdue</option>
+              </select>
+            </td>
+          </tr>
+          <tr *ngIf="myAssignments.length === 0">
+            <td colspan="4" class="empty-row">No tasks assigned to you yet.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Recent Messages & Profile Shortcuts -->
+    <div class="side-panel">
+      <div class="panel-card">
+        <div class="panel-header">
+          <h3>Recent Messages</h3>
+          <a routerLink="/messages" class="view-all">Inbox →</a>
+        </div>
+
+        <div class="messages-mini-list">
+          <div *ngFor="let m of myRecentMessages" class="mini-msg">
+            <p class="msg-text">"{{ m.messageText }}"</p>
+            <span class="msg-time">{{ m.sentAt }}</span>
+          </div>
+          <div *ngIf="myRecentMessages.length === 0" class="empty-msg">
+            <p>No recent messages in your inbox.</p>
+          </div>
+        </div>
+
+        <div class="quick-links-box">
+          <a routerLink="/profile" class="btn-block">👤 View Complete Profile</a>
+          <a routerLink="/messages" class="btn-block secondary">💬 Open Portal Chat</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
