@@ -19,6 +19,9 @@ namespace TaskAssignAPI.Mappings
 
             CreateMap<TaskAssignments, TaskAssignmentDto>();
             CreateMap<TaskAssignmentDto, TaskAssignments>();
+
+            CreateMap<SalaryHistory, SalaryHistoryDto>();
+            CreateMap<SalaryHistoryDto, SalaryHistory>();
         }
     }
 }

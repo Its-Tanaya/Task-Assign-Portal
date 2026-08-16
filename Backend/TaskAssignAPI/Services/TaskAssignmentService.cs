@@ -63,11 +63,23 @@ namespace TaskAssignAPI.Services
             if (assignment == null)
                 return;
 
+            if (status != "Pending" &&
+                status != "In Progress" &&
+                status != "Completed" &&
+                status != "Overdue")
+            {
+                return;
+            }
+
             assignment.Status = status;
 
             if (status == "Completed")
             {
                 assignment.CompletedOn = DateTime.Now;
+            }
+            else
+            {
+                assignment.CompletedOn = null;
             }
 
             _repository.Update(assignment);
