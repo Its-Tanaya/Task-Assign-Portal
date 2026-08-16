@@ -22,6 +22,9 @@ namespace TaskAssignAPI.Mappings
 
             CreateMap<SalaryHistory, SalaryHistoryDto>();
             CreateMap<SalaryHistoryDto, SalaryHistory>();
+
+            CreateMap<Messages, MessageDto>();
+            CreateMap<MessageDto, Messages>();
         }
     }
 }
