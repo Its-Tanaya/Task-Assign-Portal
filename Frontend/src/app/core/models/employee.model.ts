@@ -3,13 +3,14 @@ export interface Employee {
   employeeCode: string;
   name: string;
   email: string;
-  phone?: string;
-  departmentId: number;
+  phone: string;
+  department: string;
+  departmentId?: number;
   role: string;
   salary: number;
   joiningDate: string;
-  managerId?: number;
-  projectLeadId?: number;
+  manager: string;
+  projectLead: string;
+  status: 'Active' | 'Inactive';
   userId: number;
-  isActive: boolean;
 }

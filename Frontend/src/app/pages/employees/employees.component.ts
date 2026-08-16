@@ -1,111 +1,125 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MockDataService } from '../../core/services/mock-data.service';
+import { RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { MockDataService } from '../../core/services/mock-data.service';
 import { Employee } from '../../core/models/employee.model';
 
 @Component({
   selector: 'app-employees',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './employees.component.html',
   styleUrl: './employees.component.scss'
 })
 export class EmployeesComponent {
   searchTerm = '';
-  roleFilter = 'ALL';
+  selectedDepartment = '';
+  selectedRole = '';
+  selectedStatus = '';
 
-  // Modal controls
-  showAddModal = false;
-  showEditModal = false;
-  showDetailModal = false;
+  // Delete modal state
+  showDeleteModal = false;
+  employeeToDelete: Employee | null = null;
 
-  selectedEmployee: Employee | null = null;
-
-  // Form model
-  formEmployee: Partial<Employee> = {
-    name: '',
-    email: '',
-    phone: '',
-    role: 'Employee',
-    departmentId: 1,
-    salary: 55000,
-    joiningDate: new Date().toISOString().split('T')[0]
-  };
-
-  roles = ['HR', 'Manager', 'Project Lead', 'Employee'];
+  departments = ['IT', 'Human Resources', 'Management', 'Engineering', 'Finance', 'Sales'];
+  roles = ['HR', 'Manager', 'Project Lead', 'Backend Developer', 'Frontend Developer', 'HR Specialist', 'QA Engineer', 'Software Engineer'];
+  statuses = ['Active', 'Inactive'];
 
   constructor(
-    public mockData: MockDataService,
-    public authService: AuthService
+    public authService: AuthService,
+    public mockData: MockDataService
   ) {}
 
+  get currentRole(): string {
+    return this.authService.getRole() || 'Employee';
+  }
+
+  get isHr(): boolean {
+    return this.currentRole === 'HR';
+  }
+
+  get isManager(): boolean {
+    return this.currentRole === 'Manager';
+  }
+
+  get isLead(): boolean {
+    return this.currentRole === 'Project Lead';
+  }
+
+  get canAdd(): boolean {
+    return this.isHr || this.isManager;
+  }
+
+  get canEdit(): boolean {
+    return this.isHr || this.isManager;
+  }
+
+  get canDelete(): boolean {
+    return this.isHr;
+  }
+
   get filteredEmployees(): Employee[] {
-    return this.mockData.employees().filter((emp) => {
-      const matchesSearch =
-        emp.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        emp.email.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        emp.employeeCode.toLowerCase().includes(this.searchTerm.toLowerCase());
+    let list = this.mockData.employees();
 
-      const matchesRole = this.roleFilter === 'ALL' || emp.role === this.roleFilter;
+    // Filter by role scope for Manager / Lead if needed
+    if (this.isManager) {
+      list = list.filter((e) => e.department === 'IT' || e.department === 'Engineering' || e.manager === 'Michael Scott');
+    } else if (this.isLead) {
+      list = list.filter((e) => e.projectLead === 'Dwight Schrute' || e.department === 'Engineering' || e.department === 'IT');
+    }
 
-      return matchesSearch && matchesRole;
-    });
+    // Search filter (Name or Code)
+    if (this.searchTerm.trim()) {
+      const term = this.searchTerm.toLowerCase().trim();
+      list = list.filter((e) =>
+        e.name.toLowerCase().includes(term) ||
+        e.employeeCode.toLowerCase().includes(term) ||
+        e.email.toLowerCase().includes(term)
+      );
+    }
+
+    // Department filter
+    if (this.selectedDepartment) {
+      list = list.filter((e) => e.department === this.selectedDepartment);
+    }
+
+    // Role filter
+    if (this.selectedRole) {
+      list = list.filter((e) => e.role === this.selectedRole);
+    }
+
+    // Status filter
+    if (this.selectedStatus) {
+      list = list.filter((e) => e.status === this.selectedStatus);
+    }
+
+    return list;
   }
 
-  openAddModal(): void {
-    this.formEmployee = {
-      name: '',
-      email: '',
-      phone: '',
-      role: 'Employee',
-      departmentId: 1,
-      salary: 55000,
-      joiningDate: new Date().toISOString().split('T')[0]
-    };
-    this.showAddModal = true;
+  clearFilters(): void {
+    this.searchTerm = '';
+    this.selectedDepartment = '';
+    this.selectedRole = '';
+    this.selectedStatus = '';
   }
 
-  closeAddModal(): void {
-    this.showAddModal = false;
+  confirmDelete(emp: Employee): void {
+    this.employeeToDelete = emp;
+    this.showDeleteModal = true;
   }
 
-  saveAddEmployee(): void {
-    if (!this.formEmployee.name || !this.formEmployee.email) return;
-    this.mockData.addEmployee(this.formEmployee);
-    this.closeAddModal();
+  cancelDelete(): void {
+    this.showDeleteModal = false;
+    this.employeeToDelete = null;
   }
 
-  openEditModal(emp: Employee): void {
-    this.selectedEmployee = { ...emp };
-    this.showEditModal = true;
-  }
-
-  closeEditModal(): void {
-    this.showEditModal = false;
-    this.selectedEmployee = null;
-  }
-
-  saveEditEmployee(): void {
-    if (!this.selectedEmployee) return;
-    this.mockData.updateEmployee(this.selectedEmployee);
-    this.closeEditModal();
-  }
-
-  openDetailModal(emp: Employee): void {
-    this.selectedEmployee = emp;
-    this.showDetailModal = true;
-  }
-
-  closeDetailModal(): void {
-    this.showDetailModal = false;
-    this.selectedEmployee = null;
-  }
-
-  deleteEmployee(id: number): void {
-    if (confirm('Are you sure you want to remove this employee record?')) {
-      this.mockData.deleteEmployee(id);
+  executeDelete(): void {
+    if (this.employeeToDelete) {
+      this.mockData.deleteEmployee(this.employeeToDelete.employeeId);
+      this.showDeleteModal = false;
+      this.employeeToDelete = null;
     }
   }
 }

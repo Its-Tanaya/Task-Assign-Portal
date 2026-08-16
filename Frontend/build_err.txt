@@ -1,0 +1,18 @@
+Application bundle generation failed. [9.287 seconds]
+
+
+- Building...
+
+X [ERROR] TS2741: Property 'userId' is missing in type '{ employeeId: number; employeeCode: string; name: string; email: string; phone: string; department: string; role: string; salary: number; joiningDate: string; manager: string; projectLead: string; status: "Active" | "Inactive"; }' but required in type 'Employee'. [plugin angular-compiler]
+
+    src/app/pages/employees/employee-edit/employee-edit.component.ts:87:10:
+      87 │     const updatedEmp: Employee = {
+         ╵           ~~~~~~~~~~
+
+  'userId' is declared here.
+
+    src/app/core/models/employee.model.ts:15:2:
+      15 │   userId: number;
+         ╵   ~~~~~~
+
+

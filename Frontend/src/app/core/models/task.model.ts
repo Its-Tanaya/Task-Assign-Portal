@@ -6,6 +6,6 @@ export interface TaskItem {
   startDate: string;
   deadline: string;
   priority: string;
-  createdDate: string;
-  isActive: boolean;
+  createdDate?: string;
+  isActive?: boolean;
 }

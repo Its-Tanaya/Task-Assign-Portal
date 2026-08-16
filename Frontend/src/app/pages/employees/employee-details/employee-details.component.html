@@ -1,0 +1,133 @@
+<div class="details-container">
+  <!-- Navigation Header -->
+  <div class="page-header">
+    <a routerLink="/employees" class="btn-back">← Back to Employee Directory</a>
+    <div class="header-actions" *ngIf="employee">
+      <a *ngIf="canEdit" [routerLink]="['/employees', employee.employeeId, 'edit']" class="btn-edit">✏️ Edit Employee</a>
+      <button *ngIf="canDelete" (click)="confirmDelete()" class="btn-delete">🗑️ Delete</button>
+    </div>
+  </div>
+
+  <div *ngIf="!employee" class="not-found-card">
+    <h3>⚠️ Employee Profile Not Found</h3>
+    <p>Employee ID #{{ employeeId }} could not be retrieved.</p>
+    <a routerLink="/employees" class="btn-primary">Back to Employee Directory</a>
+  </div>
+
+  <!-- Profile View Card -->
+  <div *ngIf="employee" class="profile-layout">
+    <!-- Hero Profile Header Banner -->
+    <div class="profile-header-card">
+      <div class="avatar-lg">{{ employee.name.substring(0, 1) }}</div>
+      <div class="header-info">
+        <h2>{{ employee.name }}</h2>
+        <div class="sub-meta">
+          <span class="code font-mono">{{ employee.employeeCode }}</span>
+          <span class="bullet">•</span>
+          <span class="role-badge" [ngClass]="employee.role.toLowerCase().replace(' ', '-')">{{ employee.role }}</span>
+          <span class="bullet">•</span>
+          <span class="status-badge" [ngClass]="employee.status.toLowerCase()">{{ employee.status }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sections Grid -->
+    <div class="sections-grid">
+      <!-- Section 1: Basic Information -->
+      <div class="info-card">
+        <h3>📋 Employee Basic Information</h3>
+        <div class="data-list">
+          <div class="data-row">
+            <span class="lbl">System ID:</span>
+            <span class="val font-mono">#{{ employee.employeeId }}</span>
+          </div>
+          <div class="data-row">
+            <span class="lbl">Employee Code:</span>
+            <span class="val font-mono font-bold">{{ employee.employeeCode }}</span>
+          </div>
+          <div class="data-row">
+            <span class="lbl">Full Name:</span>
+            <span class="val font-bold">{{ employee.name }}</span>
+          </div>
+          <div class="data-row">
+            <span class="lbl">Account Status:</span>
+            <span class="val">
+              <span class="status-badge" [ngClass]="employee.status.toLowerCase()">{{ employee.status }}</span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Contact Information -->
+      <div class="info-card">
+        <h3>📞 Contact Information</h3>
+        <div class="data-list">
+          <div class="data-row">
+            <span class="lbl">Email Address:</span>
+            <span class="val font-bold text-blue">✉️ {{ employee.email }}</span>
+          </div>
+          <div class="data-row">
+            <span class="lbl">Phone Number:</span>
+            <span class="val">📞 {{ employee.phone }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Job & Organizational Info -->
+      <div class="info-card">
+        <h3>🏢 Department & Job Hierarchy</h3>
+        <div class="data-list">
+          <div class="data-row">
+            <span class="lbl">Department:</span>
+            <span class="val"><span class="dept-badge">{{ employee.department }}</span></span>
+          </div>
+          <div class="data-row">
+            <span class="lbl">Designation / Role:</span>
+            <span class="val font-bold">{{ employee.role }}</span>
+          </div>
+          <div class="data-row">
+            <span class="lbl">Reporting Manager:</span>
+            <span class="val">👤 {{ employee.manager }}</span>
+          </div>
+          <div class="data-row">
+            <span class="lbl">Project Lead:</span>
+            <span class="val">👨‍💻 {{ employee.projectLead }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 4: Compensation & Tenure -->
+      <div class="info-card">
+        <h3>💰 Compensation & Tenure</h3>
+        <div class="data-list">
+          <div class="data-row">
+            <span class="lbl">Current Base Salary:</span>
+            <span class="val salary-text">₹{{ employee.salary | number }}</span>
+          </div>
+          <div class="data-row">
+            <span class="lbl">Company Joining Date:</span>
+            <span class="val font-bold">{{ employee.joiningDate }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Modal -->
+  <div class="modal-backdrop" *ngIf="showDeleteModal">
+    <div class="modal-card">
+      <div class="modal-header warning">
+        <h3>Confirm Employee Deletion</h3>
+      </div>
+      <div class="modal-body">
+        <p class="confirm-msg">
+          Are you sure you want to delete employee <strong>{{ employee?.name }}</strong> ({{ employee?.employeeCode }})?
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button (click)="cancelDelete()" class="btn-cancel">Cancel</button>
+        <button (click)="executeDelete()" class="btn-delete-confirm">Yes, Delete Employee</button>
+      </div>
+    </div>
+  </div>
+</div>
