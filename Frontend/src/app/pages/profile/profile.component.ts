@@ -42,8 +42,10 @@ export class ProfileComponent implements OnInit {
 
     this.employeeService.getEmployees().subscribe({
       next: (emps) => {
-        const normalized = (emps || []).map((e) => this.normalizeEmployee(e));
-        // Match by userId or employeeId or username
+        const rawList = emps || [];
+        const normalized = rawList.map((e) => this.normalizeEmployee(e, rawList));
+
+        // Match logged in user by userId or employeeId or username
         const matched =
           normalized.find((e) => e.userId === currentUserId) ||
           normalized.find((e) => e.employeeId === currentUserId) ||
@@ -77,7 +79,21 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  private normalizeEmployee(emp: any): Employee {
+  private normalizeEmployee(emp: any, allEmps?: any[]): Employee {
+    let managerName = emp.manager || 'Corporate Board';
+    let leadName = emp.projectLead || 'N/A';
+
+    if (allEmps && allEmps.length > 0) {
+      if (emp.managerId) {
+        const mgr = allEmps.find((m) => m.employeeId === emp.managerId || m.userId === emp.managerId);
+        if (mgr && mgr.name) managerName = mgr.name;
+      }
+      if (emp.projectLeadId) {
+        const lead = allEmps.find((l) => l.employeeId === emp.projectLeadId || l.userId === emp.projectLeadId);
+        if (lead && lead.name) leadName = lead.name;
+      }
+    }
+
     return {
       employeeId: emp.employeeId,
       employeeCode: emp.employeeCode || `EMP${emp.employeeId}`,
@@ -89,8 +105,10 @@ export class ProfileComponent implements OnInit {
       role: emp.role || 'Employee',
       salary: emp.salary || 0,
       joiningDate: emp.joiningDate ? emp.joiningDate.toString().split('T')[0] : '',
-      manager: emp.manager || 'Michael Scott',
-      projectLead: emp.projectLead || 'Dwight Schrute',
+      manager: managerName,
+      projectLead: leadName,
+      managerId: emp.managerId,
+      projectLeadId: emp.projectLeadId,
       status: (emp.status || (emp.isActive !== false ? 'Active' : 'Inactive')) as 'Active' | 'Inactive',
       userId: emp.userId || emp.employeeId,
       isActive: emp.isActive

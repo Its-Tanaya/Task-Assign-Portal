@@ -59,7 +59,8 @@ export class EmployeeDashboardComponent implements OnInit {
 
     this.employeeService.getEmployees().subscribe({
       next: (empList) => {
-        const normalized = (empList || []).map((e) => this.normalizeEmployee(e));
+        const rawList = empList || [];
+        const normalized = rawList.map((e) => this.normalizeEmployee(e, rawList));
 
         const matched =
           normalized.find((e) => e.userId === currentUserId) ||
@@ -80,8 +81,8 @@ export class EmployeeDashboardComponent implements OnInit {
             role: currentUser.role,
             salary: 45000,
             joiningDate: new Date().toISOString().split('T')[0],
-            manager: 'Michael Scott',
-            projectLead: 'Dwight Schrute',
+            manager: 'Corporate Board',
+            projectLead: 'N/A',
             status: 'Active',
             userId: currentUser.userId
           };
@@ -121,7 +122,21 @@ export class EmployeeDashboardComponent implements OnInit {
     });
   }
 
-  private normalizeEmployee(emp: any): Employee {
+  private normalizeEmployee(emp: any, allEmps?: any[]): Employee {
+    let managerName = emp.manager || 'Corporate Board';
+    let leadName = emp.projectLead || 'N/A';
+
+    if (allEmps && allEmps.length > 0) {
+      if (emp.managerId) {
+        const mgr = allEmps.find((m) => m.employeeId === emp.managerId || m.userId === emp.managerId);
+        if (mgr && mgr.name) managerName = mgr.name;
+      }
+      if (emp.projectLeadId) {
+        const lead = allEmps.find((l) => l.employeeId === emp.projectLeadId || l.userId === emp.projectLeadId);
+        if (lead && lead.name) leadName = lead.name;
+      }
+    }
+
     return {
       employeeId: emp.employeeId,
       employeeCode: emp.employeeCode || `EMP${emp.employeeId}`,
@@ -133,8 +148,10 @@ export class EmployeeDashboardComponent implements OnInit {
       role: emp.role || 'Employee',
       salary: emp.salary || 0,
       joiningDate: emp.joiningDate ? emp.joiningDate.toString().split('T')[0] : '',
-      manager: emp.manager || 'Michael Scott',
-      projectLead: emp.projectLead || 'Dwight Schrute',
+      manager: managerName,
+      projectLead: leadName,
+      managerId: emp.managerId,
+      projectLeadId: emp.projectLeadId,
       status: (emp.status || (emp.isActive !== false ? 'Active' : 'Inactive')) as 'Active' | 'Inactive',
       userId: emp.userId || emp.employeeId,
       isActive: emp.isActive
