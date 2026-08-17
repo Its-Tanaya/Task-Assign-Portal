@@ -3,6 +3,16 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { MockDataService } from '../../../core/services/mock-data.service';
+import { EmployeeService } from '../../../services/employee.service';
+
+const DEPARTMENT_MAP: { [key: string]: number } = {
+  'IT': 1,
+  'Human Resources': 2,
+  'Management': 3,
+  'Engineering': 4,
+  'Finance': 5,
+  'Sales': 6
+};
 
 @Component({
   selector: 'app-employee-add',
@@ -16,12 +26,12 @@ export class EmployeeAddComponent {
   name = '';
   email = '';
   phone = '';
-  department = '';
-  role = '';
+  department = 'IT';
+  role = 'Software Engineer';
   salary: number | null = null;
-  joiningDate = '';
-  manager = '';
-  projectLead = '';
+  joiningDate = new Date().toISOString().split('T')[0];
+  manager = 'Michael Scott';
+  projectLead = 'Dwight Schrute';
   status: 'Active' | 'Inactive' = 'Active';
 
   departments = ['IT', 'Human Resources', 'Management', 'Engineering', 'Finance', 'Sales'];
@@ -30,13 +40,13 @@ export class EmployeeAddComponent {
   leads = ['Dwight Schrute', 'Jim Halpert', 'N/A'];
 
   submitted = false;
+  saving = false;
 
   constructor(
-    private mockData: MockDataService,
+    public mockData: MockDataService,
+    private employeeService: EmployeeService,
     private router: Router
-  ) {
-    this.employeeCode = '';
-  }
+  ) {}
 
   // Validations
   get isEmailValid(): boolean {
@@ -60,20 +70,32 @@ export class EmployeeAddComponent {
       return;
     }
 
-    this.mockData.addEmployee({
-      employeeCode: this.employeeCode,
-      name: this.name,
-      email: this.email,
-      phone: this.phone,
-      department: this.department,
+    this.saving = true;
+
+    const newEmployee: any = {
+      employeeCode: this.employeeCode.trim(),
+      name: this.name.trim(),
+      email: this.email.trim(),
+      phone: this.phone.trim(),
+      departmentId: DEPARTMENT_MAP[this.department] || 1,
       role: this.role,
       salary: Number(this.salary),
-      joiningDate: this.joiningDate,
-      manager: this.manager,
-      projectLead: this.projectLead,
-      status: this.status
-    });
+      joiningDate: this.joiningDate ? new Date(this.joiningDate).toISOString() : new Date().toISOString(),
+      managerId: 2,
+      projectLeadId: 3,
+      userId: 0,
+      isActive: this.status === 'Active'
+    };
 
-    this.router.navigate(['/employees']);
+    this.employeeService.addEmployee(newEmployee).subscribe({
+      next: () => {
+        this.saving = false;
+        this.router.navigate(['/employees']);
+      },
+      error: (err) => {
+        this.saving = false;
+        console.error('Failed to add employee', err);
+      }
+    });
   }
 }

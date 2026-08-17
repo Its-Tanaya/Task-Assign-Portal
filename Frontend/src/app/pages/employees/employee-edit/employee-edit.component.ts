@@ -3,7 +3,25 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MockDataService } from '../../../core/services/mock-data.service';
-import { Employee } from '../../../core/models/employee.model';
+import { EmployeeService } from '../../../services/employee.service';
+
+const DEPARTMENT_MAP: { [key: string]: number } = {
+  'IT': 1,
+  'Human Resources': 2,
+  'Management': 3,
+  'Engineering': 4,
+  'Finance': 5,
+  'Sales': 6
+};
+
+const DEPARTMENT_ID_TO_NAME: { [key: number]: string } = {
+  1: 'IT',
+  2: 'Human Resources',
+  3: 'Management',
+  4: 'Engineering',
+  5: 'Finance',
+  6: 'Sales'
+};
 
 @Component({
   selector: 'app-employee-edit',
@@ -19,12 +37,12 @@ export class EmployeeEditComponent implements OnInit {
   name = '';
   email = '';
   phone = '';
-  department = '';
-  role = '';
+  department = 'IT';
+  role = 'Software Engineer';
   salary: number | null = null;
   joiningDate = '';
-  manager = '';
-  projectLead = '';
+  manager = 'Michael Scott';
+  projectLead = 'Dwight Schrute';
   status: 'Active' | 'Inactive' = 'Active';
 
   departments = ['IT', 'Human Resources', 'Management', 'Engineering', 'Finance', 'Sales'];
@@ -34,29 +52,53 @@ export class EmployeeEditComponent implements OnInit {
 
   submitted = false;
   notFound = false;
+  saving = false;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private mockData: MockDataService
+    public mockData: MockDataService,
+    private employeeService: EmployeeService
   ) {}
 
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('id');
     this.employeeId = idParam ? Number(idParam) : 0;
-    this.userId = 0;
-    this.employeeCode = '';
-    this.name = '';
-    this.email = '';
-    this.phone = '';
-    this.department = '';
-    this.role = '';
-    this.salary = null;
-    this.joiningDate = '';
-    this.manager = '';
-    this.projectLead = '';
-    this.status = 'Active';
-    this.notFound = true;
+
+    if (this.employeeId) {
+      this.loadEmployee(this.employeeId);
+    } else {
+      this.notFound = true;
+    }
+  }
+
+  loadEmployee(id: number): void {
+    this.employeeService.getEmployeeById(id).subscribe({
+      next: (emp) => {
+        if (!emp) {
+          this.notFound = true;
+          return;
+        }
+
+        this.employeeId = emp.employeeId;
+        this.userId = emp.userId || 0;
+        this.employeeCode = emp.employeeCode || `EMP${emp.employeeId}`;
+        this.name = emp.name || '';
+        this.email = emp.email || '';
+        this.phone = emp.phone || '';
+        this.department = emp.department || (emp.departmentId ? DEPARTMENT_ID_TO_NAME[emp.departmentId] : 'IT') || 'IT';
+        this.role = emp.role || 'Software Engineer';
+        this.salary = emp.salary || 0;
+        this.joiningDate = emp.joiningDate ? emp.joiningDate.toString().split('T')[0] : '';
+        this.manager = emp.manager || 'Michael Scott';
+        this.projectLead = emp.projectLead || 'Dwight Schrute';
+        this.status = (emp.status || (emp.isActive !== false ? 'Active' : 'Inactive')) as 'Active' | 'Inactive';
+        this.notFound = false;
+      },
+      error: () => {
+        this.notFound = true;
+      }
+    });
   }
 
   get isEmailValid(): boolean {
@@ -80,23 +122,33 @@ export class EmployeeEditComponent implements OnInit {
       return;
     }
 
-    const updatedEmp: Employee = {
+    this.saving = true;
+
+    const updatedEmployee: any = {
       employeeId: this.employeeId,
-      userId: this.userId,
-      employeeCode: this.employeeCode,
-      name: this.name,
-      email: this.email,
-      phone: this.phone,
-      department: this.department,
+      employeeCode: this.employeeCode.trim(),
+      name: this.name.trim(),
+      email: this.email.trim(),
+      phone: this.phone.trim(),
+      departmentId: DEPARTMENT_MAP[this.department] || 1,
       role: this.role,
       salary: Number(this.salary),
-      joiningDate: this.joiningDate,
-      manager: this.manager,
-      projectLead: this.projectLead,
-      status: this.status
+      joiningDate: this.joiningDate ? new Date(this.joiningDate).toISOString() : new Date().toISOString(),
+      managerId: 2,
+      projectLeadId: 3,
+      userId: this.userId,
+      isActive: this.status === 'Active'
     };
 
-    this.mockData.updateEmployee(updatedEmp);
-    this.router.navigate(['/employees']);
+    this.employeeService.updateEmployee(this.employeeId, updatedEmployee).subscribe({
+      next: () => {
+        this.saving = false;
+        this.router.navigate(['/employees']);
+      },
+      error: (err) => {
+        this.saving = false;
+        console.error('Failed to update employee', err);
+      }
+    });
   }
 }

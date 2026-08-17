@@ -1,10 +1,20 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { MockDataService } from '../../core/services/mock-data.service';
+import { EmployeeService } from '../../services/employee.service';
 import { Employee } from '../../core/models/employee.model';
+
+const DEPARTMENT_MAP: { [key: number]: string } = {
+  1: 'IT',
+  2: 'Human Resources',
+  3: 'Management',
+  4: 'Engineering',
+  5: 'Finance',
+  6: 'Sales'
+};
 
 @Component({
   selector: 'app-employees',
@@ -13,11 +23,14 @@ import { Employee } from '../../core/models/employee.model';
   templateUrl: './employees.component.html',
   styleUrl: './employees.component.scss'
 })
-export class EmployeesComponent {
+export class EmployeesComponent implements OnInit {
   searchTerm = '';
   selectedDepartment = '';
   selectedRole = '';
   selectedStatus = '';
+
+  employees: Employee[] = [];
+  loading = false;
 
   // Delete modal state
   showDeleteModal = false;
@@ -29,8 +42,47 @@ export class EmployeesComponent {
 
   constructor(
     public authService: AuthService,
-    public mockData: MockDataService
+    public mockData: MockDataService,
+    private employeeService: EmployeeService
   ) {}
+
+  ngOnInit(): void {
+    this.loadEmployees();
+  }
+
+  loadEmployees(): void {
+    this.loading = true;
+    this.employeeService.getEmployees().subscribe({
+      next: (data) => {
+        this.employees = (data || []).map((emp) => this.normalizeEmployee(emp));
+        this.loading = false;
+      },
+      error: () => {
+        this.employees = [];
+        this.loading = false;
+      }
+    });
+  }
+
+  private normalizeEmployee(emp: any): Employee {
+    return {
+      employeeId: emp.employeeId,
+      employeeCode: emp.employeeCode || `EMP${emp.employeeId}`,
+      name: emp.name || '',
+      email: emp.email || '',
+      phone: emp.phone || '',
+      department: emp.department || DEPARTMENT_MAP[emp.departmentId] || 'IT',
+      departmentId: emp.departmentId || 1,
+      role: emp.role || 'Employee',
+      salary: emp.salary || 0,
+      joiningDate: emp.joiningDate ? emp.joiningDate.toString().split('T')[0] : '',
+      manager: emp.manager || 'Michael Scott',
+      projectLead: emp.projectLead || 'Dwight Schrute',
+      status: (emp.status || (emp.isActive !== false ? 'Active' : 'Inactive')) as 'Active' | 'Inactive',
+      userId: emp.userId || 0,
+      isActive: emp.isActive
+    };
+  }
 
   get currentRole(): string {
     return this.authService.getRole() || 'Employee';
@@ -61,7 +113,18 @@ export class EmployeesComponent {
   }
 
   get filteredEmployees(): Employee[] {
-    return [];
+    return this.employees.filter((emp) => {
+      const term = this.searchTerm.toLowerCase().trim();
+      const matchSearch = !term ||
+        emp.name.toLowerCase().includes(term) ||
+        emp.employeeCode.toLowerCase().includes(term);
+
+      const matchDept = !this.selectedDepartment || emp.department === this.selectedDepartment;
+      const matchRole = !this.selectedRole || emp.role === this.selectedRole;
+      const matchStatus = !this.selectedStatus || emp.status === this.selectedStatus;
+
+      return matchSearch && matchDept && matchRole && matchStatus;
+    });
   }
 
   clearFilters(): void {
@@ -83,9 +146,17 @@ export class EmployeesComponent {
 
   executeDelete(): void {
     if (this.employeeToDelete) {
-      this.mockData.deleteEmployee(this.employeeToDelete.employeeId);
-      this.showDeleteModal = false;
-      this.employeeToDelete = null;
+      this.employeeService.deleteEmployee(this.employeeToDelete.employeeId).subscribe({
+        next: () => {
+          this.loadEmployees();
+          this.showDeleteModal = false;
+          this.employeeToDelete = null;
+        },
+        error: () => {
+          this.showDeleteModal = false;
+          this.employeeToDelete = null;
+        }
+      });
     }
   }
 }
