@@ -1,11 +1,24 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, OnInit, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { forkJoin } from 'rxjs';
 import { MockDataService } from '../../core/services/mock-data.service';
 import { AuthService } from '../../core/services/auth.service';
+import { TaskService } from '../../services/task.service';
+import { TaskAssignmentService } from '../../services/task-assignment.service';
+import { EmployeeService } from '../../services/employee.service';
 import { TaskItem } from '../../core/models/task.model';
 import { TaskAssignment } from '../../core/models/task-assignment.model';
 import { Employee } from '../../core/models/employee.model';
+
+const DEPARTMENT_ID_TO_NAME: { [key: number]: string } = {
+  1: 'IT',
+  2: 'Human Resources',
+  3: 'Management',
+  4: 'Engineering',
+  5: 'Finance',
+  6: 'Sales'
+};
 
 @Component({
   selector: 'app-tasks',
@@ -14,8 +27,13 @@ import { Employee } from '../../core/models/employee.model';
   templateUrl: './tasks.component.html',
   styleUrl: './tasks.component.scss'
 })
-export class TasksComponent {
-  // Reactive filters using signals
+export class TasksComponent implements OnInit {
+  // Reactive signals for backend state
+  tasks = signal<TaskItem[]>([]);
+  assignments = signal<TaskAssignment[]>([]);
+  employees = signal<Employee[]>([]);
+
+  // Filter signals
   statusFilter = signal<string>('ALL');
   priorityFilter = signal<string>('ALL');
 
@@ -41,18 +59,108 @@ export class TasksComponent {
 
   constructor(
     public mockData: MockDataService,
-    public authService: AuthService
+    public authService: AuthService,
+    private taskService: TaskService,
+    private taskAssignmentService: TaskAssignmentService,
+    private employeeService: EmployeeService
   ) {}
 
-  // Computed Memoized Signals to Prevent Change Detection Loops
-  allEmployees = computed(() => this.mockData.employees());
+  ngOnInit(): void {
+    this.loadAllData();
+  }
+
+  loadAllData(): void {
+    this.employeeService.getEmployees().subscribe({
+      next: (empList) => {
+        const normalizedEmps = (empList || []).map((e) => this.normalizeEmployee(e));
+        this.employees.set(normalizedEmps);
+
+        this.taskService.getAllTasks().subscribe({
+          next: (taskList) => {
+            const normalizedTasks = (taskList || []).map((t) => this.normalizeTask(t));
+            this.tasks.set(normalizedTasks);
+
+            const isEmp = this.isEmployeeRole();
+            const currEmp = this.currentEmployee();
+
+            if (isEmp && currEmp) {
+              this.taskAssignmentService.getAssignmentsByEmployee(currEmp.employeeId).subscribe({
+                next: (assList) => {
+                  this.assignments.set((assList || []).map((a) => this.normalizeAssignment(a)));
+                },
+                error: () => this.assignments.set([])
+              });
+            } else {
+              this.taskAssignmentService.getAllAssignments().subscribe({
+                next: (assList) => {
+                  this.assignments.set((assList || []).map((a) => this.normalizeAssignment(a)));
+                },
+                error: () => this.assignments.set([])
+              });
+            }
+          },
+          error: () => this.tasks.set([])
+        });
+      },
+      error: () => this.employees.set([])
+    });
+  }
+
+  private normalizeEmployee(emp: any): Employee {
+    return {
+      employeeId: emp.employeeId,
+      employeeCode: emp.employeeCode || `EMP${emp.employeeId}`,
+      name: emp.name || '',
+      email: emp.email || '',
+      phone: emp.phone || '',
+      department: emp.department || (emp.departmentId ? DEPARTMENT_ID_TO_NAME[emp.departmentId] : 'IT') || 'IT',
+      departmentId: emp.departmentId || 1,
+      role: emp.role || 'Employee',
+      salary: emp.salary || 0,
+      joiningDate: emp.joiningDate ? emp.joiningDate.toString().split('T')[0] : '',
+      manager: emp.manager || 'Michael Scott',
+      projectLead: emp.projectLead || 'Dwight Schrute',
+      status: (emp.status || (emp.isActive !== false ? 'Active' : 'Inactive')) as 'Active' | 'Inactive',
+      userId: emp.userId || 0,
+      isActive: emp.isActive
+    };
+  }
+
+  private normalizeTask(t: any): TaskItem {
+    return {
+      taskId: t.taskId,
+      title: t.title || '',
+      description: t.description || '',
+      createdBy: t.createdBy || 1,
+      startDate: t.startDate ? t.startDate.toString().split('T')[0] : '',
+      deadline: t.deadline ? t.deadline.toString().split('T')[0] : '',
+      priority: t.priority || 'Medium',
+      createdDate: t.createdDate ? t.createdDate.toString().split('T')[0] : '',
+      isActive: t.isActive
+    };
+  }
+
+  private normalizeAssignment(a: any): TaskAssignment {
+    return {
+      taskAssignmentId: a.taskAssignmentId,
+      taskId: a.taskId,
+      employeeId: a.employeeId,
+      status: a.status || 'Pending',
+      assignedDate: a.assignedDate ? a.assignedDate.toString().split('T')[0] : '',
+      completedOn: a.completedOn ? a.completedOn.toString().split('T')[0] : undefined
+    };
+  }
+
+  // Computed signals
+  allEmployees = computed(() => this.employees());
 
   currentRole = computed(() => this.authService.getRole() || 'Employee');
-  currentUserId = computed(() => this.authService.getUserId() || 5);
+  currentUserId = computed(() => this.authService.getUserId() || 1);
 
   currentEmployee = computed(() => {
     const userId = this.currentUserId();
-    return this.mockData.employees().find((e) => e.userId === userId);
+    const emps = this.employees();
+    return emps.find((e) => e.userId === userId) || emps.find((e) => e.employeeId === userId) || emps[0] || null;
   });
 
   isEmployeeRole = computed(() => this.currentRole() === 'Employee');
@@ -64,9 +172,9 @@ export class TasksComponent {
 
   // Memoized Task Rows Computation
   taskRows = computed(() => {
-    const tasks = this.mockData.tasks();
-    const assignments = this.mockData.assignments();
-    const employees = this.mockData.employees();
+    const tasks = this.tasks();
+    const assignments = this.assignments();
+    const employees = this.employees();
     const currEmp = this.currentEmployee();
     const isEmp = this.isEmployeeRole();
     const sFilter = this.statusFilter();
@@ -92,7 +200,7 @@ export class TasksComponent {
       }
     });
 
-    // Filter strictly by current employeeId if in Employee role
+    // If Employee role, only show assignments matching current employee
     if (isEmp && currEmp) {
       rows = rows.filter((r) => r.assignment.employeeId === currEmp.employeeId);
     }
@@ -159,24 +267,72 @@ export class TasksComponent {
       return;
     }
 
-    const createdTask = this.mockData.addTask({
+    const newTaskPayload: Partial<TaskItem> = {
       title: this.newTaskTitle.trim(),
       description: this.newTaskDescription.trim(),
       priority: this.newTaskPriority,
-      startDate: this.newTaskStartDate,
-      deadline: this.newTaskDeadline,
-      createdBy: this.currentUserId()
+      startDate: this.newTaskStartDate ? new Date(this.newTaskStartDate).toISOString() : new Date().toISOString(),
+      deadline: this.newTaskDeadline ? new Date(this.newTaskDeadline).toISOString() : new Date().toISOString(),
+      createdBy: this.currentUserId(),
+      createdDate: new Date().toISOString(),
+      isActive: true
+    };
+
+    this.taskService.addTask(newTaskPayload).subscribe({
+      next: () => {
+        // Fetch tasks to find the newly created task's ID
+        this.taskService.getAllTasks().subscribe({
+          next: (taskList) => {
+            const createdTask = taskList.reduce((max, t) => (t.taskId > (max?.taskId || 0) ? t : max), taskList[0]);
+            if (createdTask && assignedEmpIds.length > 0) {
+              const assignRequests = assignedEmpIds.map((empId) =>
+                this.taskAssignmentService.assignTask({
+                  taskId: createdTask.taskId,
+                  employeeId: empId,
+                  status: 'Pending',
+                  assignedDate: new Date().toISOString()
+                })
+              );
+
+              forkJoin(assignRequests).subscribe({
+                next: () => {
+                  this.loadAllData();
+                  this.closeCreateModal();
+                },
+                error: () => {
+                  this.loadAllData();
+                  this.closeCreateModal();
+                }
+              });
+            } else {
+              this.loadAllData();
+              this.closeCreateModal();
+            }
+          },
+          error: () => {
+            this.loadAllData();
+            this.closeCreateModal();
+          }
+        });
+      },
+      error: (err) => {
+        console.error('Failed to create task', err);
+      }
     });
-
-    this.mockData.assignTaskToMultiple(createdTask.taskId, assignedEmpIds);
-
-    this.closeCreateModal();
   }
 
   updateStatus(assignmentId: number, event: Event): void {
     const select = event.target as HTMLSelectElement;
-    if (select.value) {
-      this.mockData.updateAssignmentStatus(assignmentId, select.value);
+    const newStatus = select.value;
+    if (newStatus && assignmentId) {
+      this.taskAssignmentService.updateStatus(assignmentId, newStatus).subscribe({
+        next: () => {
+          this.loadAllData();
+        },
+        error: (err) => {
+          console.error('Failed to update assignment status', err);
+        }
+      });
     }
   }
 
