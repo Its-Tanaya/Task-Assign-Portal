@@ -1,70 +1,37 @@
 import { Injectable, signal } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { User, LoginRequest } from '../models/user.model';
+import { LoginService } from '../../services/login.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private storageKey = 'task_portal_user';
+  private readonly storageKey = 'task_portal_user';
 
-  // Mock accounts mapping
-  private mockUsers: { [emailOrKey: string]: User } = {
-    'hr@taskassign.com': { userId: 1, username: 'Sarah Jenkins', role: 'HR' },
-    'manager@taskassign.com': { userId: 2, username: 'Michael Scott', role: 'Manager' },
-    'lead@taskassign.com': { userId: 3, username: 'Dwight Schrute', role: 'Project Lead' },
-    'employee@taskassign.com': { userId: 5, username: 'Rahul Patil', role: 'Employee' },
-    // Fallback role aliases
-    'hr': { userId: 1, username: 'Sarah Jenkins', role: 'HR' },
-    'manager': { userId: 2, username: 'Michael Scott', role: 'Manager' },
-    'lead': { userId: 3, username: 'Dwight Schrute', role: 'Project Lead' },
-    'employee': { userId: 5, username: 'Rahul Patil', role: 'Employee' }
-  };
+  currentUser = signal<User | null>(this.getStoredUser());
 
-  private defaultUser: User = {
-    userId: 5,
-    username: 'Rahul Patil',
-    role: 'Employee'
-  };
-
-  currentUser = signal<User | null>(this.getStoredUser() || this.defaultUser);
-
-  constructor() {}
+  constructor(private loginService: LoginService) {}
 
   login(credentials: LoginRequest): Observable<User> {
-    const key = credentials.username.toLowerCase().trim();
-    let user: User;
+    return this.loginService.login(credentials).pipe(
+      tap((user) => {
+        this.setUser(user);
+      })
+    );
+  }
 
-    if (this.mockUsers[key]) {
-      user = this.mockUsers[key];
-    } else if (key.includes('hr')) {
-      user = this.mockUsers['hr@taskassign.com'];
-    } else if (key.includes('manager')) {
-      user = this.mockUsers['manager@taskassign.com'];
-    } else if (key.includes('lead')) {
-      user = this.mockUsers['lead@taskassign.com'];
-    } else {
-      user = {
-        userId: 5,
-        username: credentials.username,
-        role: 'Employee'
-      };
-    }
-
+  setUser(user: User): void {
     this.setStoredUser(user);
     this.currentUser.set(user);
-    return of(user);
   }
 
   switchRole(role: string): void {
-    let targetUser: User;
-    if (role === 'HR') targetUser = this.mockUsers['hr@taskassign.com'];
-    else if (role === 'Manager') targetUser = this.mockUsers['manager@taskassign.com'];
-    else if (role === 'Project Lead') targetUser = this.mockUsers['lead@taskassign.com'];
-    else targetUser = this.mockUsers['employee@taskassign.com'];
-
-    this.setStoredUser(targetUser);
-    this.currentUser.set(targetUser);
+    const current = this.currentUser();
+    if (current) {
+      const updatedUser: User = { ...current, role };
+      this.setUser(updatedUser);
+    }
   }
 
   logout(): void {

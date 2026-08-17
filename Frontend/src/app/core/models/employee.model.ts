@@ -11,6 +11,11 @@ export interface Employee {
   joiningDate: string;
   manager: string;
   projectLead: string;
+  managerId?: number | null;
+  projectLeadId?: number | null;
   status: 'Active' | 'Inactive';
   userId: number;
+  isActive?: boolean;
 }
+
+

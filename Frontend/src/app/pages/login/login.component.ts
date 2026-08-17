@@ -27,8 +27,8 @@ export class LoginComponent {
   ) {}
 
   onLogin(): void {
-    if (!this.username) {
-      this.errorMessage = 'Please enter a username.';
+    if (!this.username.trim() || !this.password) {
+      this.errorMessage = 'Please enter username and password.';
       return;
     }
 
@@ -36,15 +36,14 @@ export class LoginComponent {
     this.errorMessage = '';
 
     this.authService.login({
-      username: this.username,
+      username: this.username.trim(),
       password: this.password
     }).subscribe({
       next: (user) => {
-        // Apply selected role for demo testing
-        this.authService.switchRole(this.selectedRole);
         this.loading = false;
 
-        switch (this.selectedRole) {
+        const role = user.role || this.selectedRole;
+        switch (role) {
           case 'HR':
             this.router.navigate(['/hr/dashboard']);
             break;
@@ -59,9 +58,13 @@ export class LoginComponent {
             break;
         }
       },
-      error: () => {
+      error: (err) => {
         this.loading = false;
-        this.errorMessage = 'Login failed. Please check credentials.';
+        if (err.status === 401) {
+          this.errorMessage = 'Invalid username or password.';
+        } else {
+          this.errorMessage = 'Login failed. Could not connect to backend server.';
+        }
       }
     });
   }
