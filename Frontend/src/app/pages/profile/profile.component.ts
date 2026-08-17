@@ -16,9 +16,7 @@ export class ProfileComponent {
     public mockData: MockDataService
   ) {}
 
-  get currentEmployee() {
-    const user = this.authService.getUser();
-    if (!user) return null;
-    return this.mockData.employees().find((e) => e.userId === user.userId) || this.mockData.employees()[0];
+  get currentEmployee(): any | null {
+    return null;
   }
 }

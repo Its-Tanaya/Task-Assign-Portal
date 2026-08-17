@@ -23,6 +23,19 @@ builder.Services.AddScoped<IMessageService, MessageService>();
 
 // Add services to the container.
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngular", policy =>
+    {
+        policy.WithOrigins(
+            "http://localhost:4200",
+            "http://localhost:8140"
+        )
+        .AllowAnyHeader()
+        .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddControllers();
 
 builder.Services.AddAutoMapper(cfg =>
@@ -44,6 +57,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowAngular");
 
 app.UseAuthorization();
 

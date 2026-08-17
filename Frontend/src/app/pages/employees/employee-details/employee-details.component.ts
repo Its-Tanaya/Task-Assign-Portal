@@ -27,10 +27,8 @@ export class EmployeeDetailsComponent implements OnInit {
 
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('id');
-    if (idParam) {
-      this.employeeId = Number(idParam);
-      this.employee = this.mockData.getEmployeeById(this.employeeId) || null;
-    }
+    this.employeeId = idParam ? Number(idParam) : 0;
+    this.employee = null;
   }
 
   get currentRole(): string {

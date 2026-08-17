@@ -19,12 +19,12 @@ export class EmployeeEditComponent implements OnInit {
   name = '';
   email = '';
   phone = '';
-  department = 'IT';
-  role = 'Backend Developer';
+  department = '';
+  role = '';
   salary: number | null = null;
   joiningDate = '';
-  manager = 'Michael Scott';
-  projectLead = 'Dwight Schrute';
+  manager = '';
+  projectLead = '';
   status: 'Active' | 'Inactive' = 'Active';
 
   departments = ['IT', 'Human Resources', 'Management', 'Engineering', 'Finance', 'Sales'];
@@ -43,26 +43,20 @@ export class EmployeeEditComponent implements OnInit {
 
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('id');
-    if (idParam) {
-      this.employeeId = Number(idParam);
-      const emp = this.mockData.getEmployeeById(this.employeeId);
-      if (emp) {
-        this.userId = emp.userId;
-        this.employeeCode = emp.employeeCode;
-        this.name = emp.name;
-        this.email = emp.email;
-        this.phone = emp.phone;
-        this.department = emp.department;
-        this.role = emp.role;
-        this.salary = emp.salary;
-        this.joiningDate = emp.joiningDate;
-        this.manager = emp.manager;
-        this.projectLead = emp.projectLead;
-        this.status = emp.status;
-      } else {
-        this.notFound = true;
-      }
-    }
+    this.employeeId = idParam ? Number(idParam) : 0;
+    this.userId = 0;
+    this.employeeCode = '';
+    this.name = '';
+    this.email = '';
+    this.phone = '';
+    this.department = '';
+    this.role = '';
+    this.salary = null;
+    this.joiningDate = '';
+    this.manager = '';
+    this.projectLead = '';
+    this.status = 'Active';
+    this.notFound = true;
   }
 
   get isEmailValid(): boolean {

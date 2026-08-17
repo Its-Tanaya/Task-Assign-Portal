@@ -2,6 +2,19 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MockDataService } from '../../core/services/mock-data.service';
 
+interface EmployeePerformanceRow {
+  employee: {
+    employeeCode: string;
+    name: string;
+    role: string;
+  };
+  assignedCount: number;
+  completedCount: number;
+  pendingCount: number;
+  overdueCount: number;
+  completionRate: number;
+}
+
 @Component({
   selector: 'app-reports',
   standalone: true,
@@ -13,43 +26,26 @@ export class ReportsComponent {
   constructor(public mockData: MockDataService) {}
 
   get totalTasksCount(): number {
-    return this.mockData.tasks().length;
+    return 0;
   }
 
   get pendingCount(): number {
-    return this.mockData.assignments().filter((a) => a.status === 'Pending').length;
+    return 0;
   }
 
   get inProgressCount(): number {
-    return this.mockData.assignments().filter((a) => a.status === 'In Progress').length;
+    return 0;
   }
 
   get completedCount(): number {
-    return this.mockData.assignments().filter((a) => a.status === 'Completed').length;
+    return 0;
   }
 
   get overdueCount(): number {
-    return this.mockData.assignments().filter((a) => a.status === 'Overdue').length;
+    return 0;
   }
 
-  get employeePerformance() {
-    const employees = this.mockData.employees();
-    const assignments = this.mockData.assignments();
-
-    return employees.map((emp) => {
-      const empAssignments = assignments.filter((a) => a.employeeId === emp.employeeId);
-      const completed = empAssignments.filter((a) => a.status === 'Completed').length;
-      const total = empAssignments.length;
-      const rate = total > 0 ? Math.round((completed / total) * 100) : 0;
-
-      return {
-        employee: emp,
-        assignedCount: total,
-        completedCount: completed,
-        pendingCount: empAssignments.filter((a) => a.status === 'Pending').length,
-        overdueCount: empAssignments.filter((a) => a.status === 'Overdue').length,
-        completionRate: rate
-      };
-    });
+  get employeePerformance(): EmployeePerformanceRow[] {
+    return [];
   }
 }

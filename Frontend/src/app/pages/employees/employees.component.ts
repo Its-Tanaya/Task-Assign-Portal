@@ -61,41 +61,7 @@ export class EmployeesComponent {
   }
 
   get filteredEmployees(): Employee[] {
-    let list = this.mockData.employees();
-
-    // Filter by role scope for Manager / Lead if needed
-    if (this.isManager) {
-      list = list.filter((e) => e.department === 'IT' || e.department === 'Engineering' || e.manager === 'Michael Scott');
-    } else if (this.isLead) {
-      list = list.filter((e) => e.projectLead === 'Dwight Schrute' || e.department === 'Engineering' || e.department === 'IT');
-    }
-
-    // Search filter (Name or Code)
-    if (this.searchTerm.trim()) {
-      const term = this.searchTerm.toLowerCase().trim();
-      list = list.filter((e) =>
-        e.name.toLowerCase().includes(term) ||
-        e.employeeCode.toLowerCase().includes(term) ||
-        e.email.toLowerCase().includes(term)
-      );
-    }
-
-    // Department filter
-    if (this.selectedDepartment) {
-      list = list.filter((e) => e.department === this.selectedDepartment);
-    }
-
-    // Role filter
-    if (this.selectedRole) {
-      list = list.filter((e) => e.role === this.selectedRole);
-    }
-
-    // Status filter
-    if (this.selectedStatus) {
-      list = list.filter((e) => e.status === this.selectedStatus);
-    }
-
-    return list;
+    return [];
   }
 
   clearFilters(): void {

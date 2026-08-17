@@ -14,7 +14,7 @@ import { MessageItem } from '../../core/models/message.model';
   styleUrl: './messages.component.scss'
 })
 export class MessagesComponent {
-  selectedRecipientId: number | null = 4; // Default to Jim Halpert
+  selectedRecipientId: number | null = null;
   newMessageText = '';
 
   constructor(
@@ -27,20 +27,15 @@ export class MessagesComponent {
   }
 
   get otherEmployees(): Employee[] {
-    return this.mockData.employees().filter((e) => e.userId !== this.currentUserId);
+    return [];
   }
 
   get selectedRecipient(): Employee | undefined {
-    return this.mockData.employees().find((e) => e.userId === this.selectedRecipientId);
+    return undefined;
   }
 
   get activeThread(): MessageItem[] {
-    if (!this.selectedRecipientId) return [];
-    return this.mockData.messages().filter(
-      (m) =>
-        (m.senderId === this.currentUserId && m.receiverId === this.selectedRecipientId) ||
-        (m.senderId === this.selectedRecipientId && m.receiverId === this.currentUserId)
-    );
+    return [];
   }
 
   selectRecipient(userId: number): void {
@@ -55,17 +50,10 @@ export class MessagesComponent {
 
   sendMessage(): void {
     if (!this.selectedRecipientId || !this.newMessageText.trim()) return;
-    this.mockData.sendMessage(
-      this.currentUserId,
-      this.selectedRecipientId,
-      this.newMessageText.trim()
-    );
     this.newMessageText = '';
   }
 
   getUnreadCount(userId: number): number {
-    return this.mockData
-      .messages()
-      .filter((m) => m.senderId === userId && m.receiverId === this.currentUserId && !m.isRead).length;
+    return 0;
   }
 }

@@ -16,12 +16,12 @@ export class EmployeeAddComponent {
   name = '';
   email = '';
   phone = '';
-  department = 'IT';
-  role = 'Backend Developer';
+  department = '';
+  role = '';
   salary: number | null = null;
-  joiningDate = new Date().toISOString().split('T')[0];
-  manager = 'Michael Scott';
-  projectLead = 'Dwight Schrute';
+  joiningDate = '';
+  manager = '';
+  projectLead = '';
   status: 'Active' | 'Inactive' = 'Active';
 
   departments = ['IT', 'Human Resources', 'Management', 'Engineering', 'Finance', 'Sales'];
@@ -35,9 +35,7 @@ export class EmployeeAddComponent {
     private mockData: MockDataService,
     private router: Router
   ) {
-    // Generate default code
-    const count = this.mockData.employees().length + 1;
-    this.employeeCode = `EMP${String(count).padStart(3, '0')}`;
+    this.employeeCode = '';
   }
 
   // Validations
