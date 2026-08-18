@@ -22,7 +22,8 @@ namespace TaskAssignAPI.Services
         {
             var employees = await _repository.GetAllAsync();
 
-            return _mapper.Map<IEnumerable<EmployeeDto>>(employees);
+             return _mapper.Map<IEnumerable<EmployeeDto>>(employees);
+            
         }
 
         public async Task<EmployeeDto?> GetEmployeeByIdAsync(int id)
