@@ -30,7 +30,7 @@ export class EmployeeAddComponent implements OnInit {
   phone = '';
   password = '';
   department = 'IT';
-  role = 'Software Engineer';
+  role = 'Employee';
   salary: number | null = null;
   joiningDate = new Date().toISOString().split('T')[0];
   manager = 'Corporate Board';
@@ -38,7 +38,7 @@ export class EmployeeAddComponent implements OnInit {
   status: 'Active' | 'Inactive' = 'Active';
 
   departments = ['IT', 'Human Resources', 'Management', 'Engineering', 'Finance', 'Sales'];
-  roles = ['HR', 'Manager', 'Project Lead', 'Backend Developer', 'Frontend Developer', 'HR Specialist', 'QA Engineer', 'Software Engineer'];
+  roles = ['HR', 'Manager', 'ProjectLead', 'Employee'];
   managers = ['Corporate Board'];
   leads = ['N/A'];
   private employees: Employee[] = [];
@@ -115,7 +115,7 @@ export class EmployeeAddComponent implements OnInit {
       email: this.email.trim(),
       phone: this.phone ? this.phone.trim() : '',
       departmentId: DEPARTMENT_MAP[this.department] || 1,
-      role: this.role || 'Software Engineer',
+      role: this.role || 'Employee',
       salary: Number(this.salary),
       joiningDate: formattedJoiningDate,
       managerId: this.getEmployeeId(this.manager),
