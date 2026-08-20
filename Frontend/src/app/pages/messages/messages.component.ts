@@ -1,21 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MockDataService } from '../../core/services/mock-data.service';
 import { AuthService } from '../../core/services/auth.service';
-import { MessageService } from '../../services/message.service';
-import { EmployeeService } from '../../services/employee.service';
-import { Employee } from '../../core/models/employee.model';
+import { MessageService, MessageUser } from '../../services/message.service';
 import { MessageItem } from '../../core/models/message.model';
 
-const DEPARTMENT_ID_TO_NAME: { [key: number]: string } = {
-  1: 'IT',
-  2: 'Human Resources',
-  3: 'Management',
-  4: 'Engineering',
-  5: 'Finance',
-  6: 'Sales'
-};
+interface MessageRecipient {
+  userId: number;
+  name: string;
+  role: string;
+}
 
 @Component({
   selector: 'app-messages',
@@ -28,18 +22,16 @@ export class MessagesComponent implements OnInit {
   selectedRecipientId: number | null = null;
   newMessageText = '';
 
-  employees: Employee[] = [];
+  employees: MessageRecipient[] = [];
   messages: MessageItem[] = [];
 
   constructor(
-    public mockData: MockDataService,
     public authService: AuthService,
-    private messageService: MessageService,
-    private employeeService: EmployeeService
+    private messageService: MessageService
   ) {}
 
   ngOnInit(): void {
-    this.loadEmployees();
+    this.loadUsers();
     this.loadMessages();
   }
 
@@ -47,16 +39,18 @@ export class MessagesComponent implements OnInit {
     return this.authService.getUserId() || 1;
   }
 
-  loadEmployees(): void {
-    this.employeeService.getEmployees().subscribe({
+  loadUsers(): void {
+    this.messageService.getUsers().subscribe({
       next: (data) => {
-        this.employees = (data || []).map((e) => this.normalizeEmployee(e));
+        this.employees = (data || [])
+          .filter((user) => user.isActive && user.userId !== this.currentUserId)
+          .map((user) => this.normalizeUser(user));
         if (!this.selectedRecipientId && this.otherEmployees.length > 0) {
           this.selectRecipient(this.otherEmployees[0].userId);
         }
       },
       error: (err) => {
-        console.error('Failed to load employees for messaging', err);
+        console.error('Failed to load users for messaging', err);
       }
     });
   }
@@ -72,23 +66,11 @@ export class MessagesComponent implements OnInit {
     });
   }
 
-  private normalizeEmployee(emp: any): Employee {
+  private normalizeUser(user: MessageUser): MessageRecipient {
     return {
-      employeeId: emp.employeeId,
-      employeeCode: emp.employeeCode || `EMP${emp.employeeId}`,
-      name: emp.name || '',
-      email: emp.email || '',
-      phone: emp.phone || '',
-      department: emp.department || (emp.departmentId ? DEPARTMENT_ID_TO_NAME[emp.departmentId] : 'IT') || 'IT',
-      departmentId: emp.departmentId || 1,
-      role: emp.role || 'Employee',
-      salary: emp.salary || 0,
-      joiningDate: emp.joiningDate ? emp.joiningDate.toString().split('T')[0] : '',
-      manager: emp.manager || 'Michael Scott',
-      projectLead: emp.projectLead || 'Dwight Schrute',
-      status: (emp.status || (emp.isActive !== false ? 'Active' : 'Inactive')) as 'Active' | 'Inactive',
-      userId: emp.userId || emp.employeeId,
-      isActive: emp.isActive
+      userId: user.userId,
+      name: user.username,
+      role: user.role
     };
   }
 
@@ -112,12 +94,12 @@ export class MessagesComponent implements OnInit {
     };
   }
 
-  get otherEmployees(): Employee[] {
-    return this.employees.filter((emp) => emp.userId !== this.currentUserId && emp.employeeId !== this.currentUserId);
+  get otherEmployees(): MessageRecipient[] {
+    return this.employees;
   }
 
-  get selectedRecipient(): Employee | undefined {
-    return this.employees.find((emp) => emp.userId === this.selectedRecipientId || emp.employeeId === this.selectedRecipientId);
+  get selectedRecipient(): MessageRecipient | undefined {
+    return this.employees.find((emp) => emp.userId === this.selectedRecipientId);
   }
 
   get activeThread(): MessageItem[] {

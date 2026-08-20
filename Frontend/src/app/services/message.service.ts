@@ -4,6 +4,13 @@ import { Observable } from 'rxjs';
 import { API_CONFIG } from './api.config';
 import { MessageItem } from '../core/models/message.model';
 
+export interface MessageUser {
+  userId: number;
+  username: string;
+  role: string;
+  isActive: boolean;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -11,6 +18,10 @@ export class MessageService {
   private readonly apiUrl = `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.message}`;
 
   constructor(private http: HttpClient) {}
+
+  getUsers(): Observable<MessageUser[]> {
+    return this.http.get<MessageUser[]>(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.user}`);
+  }
 
   sendMessage(message: Partial<MessageItem>): Observable<any> {
     return this.http.post<any>(this.apiUrl, message);
