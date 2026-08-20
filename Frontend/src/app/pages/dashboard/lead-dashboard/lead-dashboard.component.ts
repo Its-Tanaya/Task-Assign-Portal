@@ -139,7 +139,10 @@ export class ProjectLeadDashboardComponent implements OnInit {
   }
 
   get projectTasks() {
-    return this.tasks.map((t) => {
+    return this.tasks.filter((t) => {
+      const ass = this.assignments.find((a) => a.taskId === t.taskId);
+      return this.isTaskVisible(t, ass?.status || 'Unassigned');
+    }).map((t) => {
       const ass = this.assignments.find((a) => a.taskId === t.taskId);
       const emp = ass ? this.employees.find((e) => e.employeeId === ass.employeeId) : null;
       return {
@@ -148,5 +151,15 @@ export class ProjectLeadDashboardComponent implements OnInit {
         status: ass ? ass.status : 'Unassigned'
       };
     });
+  }
+
+  private isTaskVisible(task: TaskItem, status: string): boolean {
+    if (status !== 'Completed' || !task.deadline) return true;
+
+    const [year, month, day] = task.deadline.split('-').map(Number);
+    const deadline = new Date(year, month - 1, day);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return deadline >= today;
   }
 }

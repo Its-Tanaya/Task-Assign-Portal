@@ -147,12 +147,25 @@ export class HrDashboardComponent implements OnInit {
   }
 
   get recentTasks() {
-    return this.tasks.slice(0, 4).map((t) => {
+    return this.tasks.filter((t) => {
+      const ass = this.assignments.find((a) => a.taskId === t.taskId);
+      return this.isTaskVisible(t, ass?.status || 'Unassigned');
+    }).slice(0, 4).map((t) => {
       const ass = this.assignments.find((a) => a.taskId === t.taskId);
       return {
         ...t,
         status: ass ? ass.status : 'Unassigned'
       };
     });
+  }
+
+  private isTaskVisible(task: TaskItem, status: string): boolean {
+    if (status !== 'Completed' || !task.deadline) return true;
+
+    const [year, month, day] = task.deadline.split('-').map(Number);
+    const deadline = new Date(year, month - 1, day);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return deadline >= today;
   }
 }

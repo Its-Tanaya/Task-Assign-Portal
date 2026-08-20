@@ -1,8 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { catchError, forkJoin, of } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import { MessageService, MessageUser } from '../../services/message.service';
+import { EmployeeService } from '../../services/employee.service';
+import { Employee } from '../../core/models/employee.model';
 import { MessageItem } from '../../core/models/message.model';
 
 interface MessageRecipient {
@@ -27,7 +30,8 @@ export class MessagesComponent implements OnInit {
 
   constructor(
     public authService: AuthService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private employeeService: EmployeeService
   ) {}
 
   ngOnInit(): void {
@@ -40,11 +44,14 @@ export class MessagesComponent implements OnInit {
   }
 
   loadUsers(): void {
-    this.messageService.getUsers().subscribe({
-      next: (data) => {
-        this.employees = (data || [])
+    forkJoin({
+      users: this.messageService.getUsers(),
+      employees: this.employeeService.getEmployees().pipe(catchError(() => of([] as Employee[])))
+    }).subscribe({
+      next: ({ users, employees }) => {
+        this.employees = (users || [])
           .filter((user) => user.isActive && user.userId !== this.currentUserId)
-          .map((user) => this.normalizeUser(user));
+          .map((user) => this.normalizeUser(user, employees));
         if (!this.selectedRecipientId && this.otherEmployees.length > 0) {
           this.selectRecipient(this.otherEmployees[0].userId);
         }
@@ -66,10 +73,18 @@ export class MessagesComponent implements OnInit {
     });
   }
 
-  private normalizeUser(user: MessageUser): MessageRecipient {
+  private normalizeUser(user: MessageUser, employees: Employee[]): MessageRecipient {
+    const name = user.role === 'HR'
+      ? 'HR'
+      : user.role === 'Manager'
+        ? 'Manager'
+        : user.role === 'ProjectLead'
+          ? 'Lead'
+          : employees.find((employee) => employee.userId === user.userId)?.name || user.username;
+
     return {
       userId: user.userId,
-      name: user.username,
+      name,
       role: user.role
     };
   }

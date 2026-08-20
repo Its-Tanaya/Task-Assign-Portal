@@ -205,6 +205,10 @@ export class EmployeeDashboardComponent implements OnInit {
 
   get myAssignments() {
     return this.assignments
+      .filter((a) => {
+        const task = this.tasks.find((t) => t.taskId === a.taskId);
+        return task ? this.isTaskVisible(task, a.status) : false;
+      })
       .map((a) => {
         const task = this.tasks.find((t) => t.taskId === a.taskId);
         return {
@@ -213,6 +217,16 @@ export class EmployeeDashboardComponent implements OnInit {
         };
       })
       .filter((item) => !!item.task);
+  }
+
+  private isTaskVisible(task: TaskItem, status: string): boolean {
+    if (status !== 'Completed' || !task.deadline) return true;
+
+    const [year, month, day] = task.deadline.split('-').map(Number);
+    const deadline = new Date(year, month - 1, day);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return deadline >= today;
   }
 
   get myPendingCount(): number {
