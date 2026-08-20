@@ -23,7 +23,7 @@ export class SidebarComponent {
         return '/hr/dashboard';
       case 'Manager':
         return '/manager/dashboard';
-      case 'Project Lead':
+      case 'ProjectLead':
         return '/lead/dashboard';
       default:
         return '/employee/dashboard';
@@ -39,7 +39,7 @@ export class SidebarComponent {
   }
 
   isLead(): boolean {
-    return this.role === 'Project Lead';
+    return this.role === 'ProjectLead';
   }
 
   isEmployee(): boolean {

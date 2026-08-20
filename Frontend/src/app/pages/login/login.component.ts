@@ -50,7 +50,7 @@ export class LoginComponent {
           case 'Manager':
             this.router.navigate(['/manager/dashboard']);
             break;
-          case 'Project Lead':
+          case 'ProjectLead':
             this.router.navigate(['/lead/dashboard']);
             break;
           default:
