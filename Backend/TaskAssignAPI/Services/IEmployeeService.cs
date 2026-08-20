@@ -1,13 +1,17 @@
 ﻿using TaskAssignAPI.DTOs;
 
-namespace TaskAssignAPI.Services
+namespace TaskAssignAPI.Interfaces
 {
     public interface IEmployeeService
     {
         Task<IEnumerable<EmployeeDto>> GetAllEmployeesAsync();
+
         Task<EmployeeDto?> GetEmployeeByIdAsync(int id);
-        Task AddEmployeeAsync(EmployeeDto employeeDto);
+
+        Task AddEmployeeAsync(CreateEmployeeDto employeeDto);
+
         Task UpdateEmployeeAsync(EmployeeDto employeeDto);
+
         Task DeleteEmployeeAsync(int id);
     }
 }

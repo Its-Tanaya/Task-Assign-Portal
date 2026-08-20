@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { MockDataService } from '../../../core/services/mock-data.service';
 import { EmployeeService } from '../../../services/employee.service';
-import { AuthService } from '../../../core/services/auth.service';
+import { CreateEmployee, Employee } from '../../../core/models/employee.model';
 
 const DEPARTMENT_MAP: { [key: string]: number } = {
   'IT': 1,
@@ -15,18 +16,6 @@ const DEPARTMENT_MAP: { [key: string]: number } = {
   'Sales': 6
 };
 
-const MANAGER_MAP: { [key: string]: number | null } = {
-  'Sarah Jenkins': 1,
-  'Michael Scott': 2,
-  'Corporate Board': null
-};
-
-const LEAD_MAP: { [key: string]: number | null } = {
-  'Dwight Schrute': 3,
-  'Jim Halpert': 4,
-  'N/A': null
-};
-
 @Component({
   selector: 'app-employee-add',
   standalone: true,
@@ -34,33 +23,49 @@ const LEAD_MAP: { [key: string]: number | null } = {
   templateUrl: './employee-add.component.html',
   styleUrl: './employee-add.component.scss'
 })
-export class EmployeeAddComponent {
+export class EmployeeAddComponent implements OnInit {
   employeeCode = '';
   name = '';
   email = '';
   phone = '';
+  password = '';
   department = 'IT';
   role = 'Software Engineer';
   salary: number | null = null;
   joiningDate = new Date().toISOString().split('T')[0];
-  manager = 'Michael Scott';
-  projectLead = 'Dwight Schrute';
+  manager = 'Corporate Board';
+  projectLead = 'N/A';
   status: 'Active' | 'Inactive' = 'Active';
 
   departments = ['IT', 'Human Resources', 'Management', 'Engineering', 'Finance', 'Sales'];
   roles = ['HR', 'Manager', 'Project Lead', 'Backend Developer', 'Frontend Developer', 'HR Specialist', 'QA Engineer', 'Software Engineer'];
-  managers = ['Michael Scott', 'Sarah Jenkins', 'Corporate Board'];
-  leads = ['Dwight Schrute', 'Jim Halpert', 'N/A'];
+  managers = ['Corporate Board'];
+  leads = ['N/A'];
+  private employees: Employee[] = [];
 
   submitted = false;
   saving = false;
+  submitErrorMessage = '';
 
   constructor(
     public mockData: MockDataService,
     private employeeService: EmployeeService,
-    private authService: AuthService,
     private router: Router
   ) {}
+
+  ngOnInit(): void {
+    this.employeeService.getEmployees().subscribe({
+      next: (employees) => {
+        this.employees = employees || [];
+        const employeeNames = this.employees.map((employee) => employee.name).filter(Boolean);
+        this.managers = ['Corporate Board', ...employeeNames];
+        this.leads = ['N/A', ...employeeNames];
+      },
+      error: (err) => {
+        console.error('[EmployeeAdd] Failed to load employee relationships:', err);
+      }
+    });
+  }
 
   // Validations
   get isEmailValid(): boolean {
@@ -84,6 +89,7 @@ export class EmployeeAddComponent {
     if (
       !this.name ||
       !this.employeeCode ||
+      !this.password.trim() ||
       !this.isEmailValid ||
       !this.isPhoneValid ||
       !this.isSalaryValid
@@ -92,6 +98,7 @@ export class EmployeeAddComponent {
     }
 
     this.saving = true;
+    this.submitErrorMessage = '';
 
     // Safely parse joining date to prevent runtime date formatting errors
     let formattedJoiningDate = new Date().toISOString();
@@ -102,12 +109,7 @@ export class EmployeeAddComponent {
       }
     }
 
-    // Get current logged-in user ID, fallback to 1 if not available
-    const currentUserId = this.authService.getUserId() || 1;
-
-    // Exact matching DTO structure expected by POST /api/Employee (tested in Swagger)
-    const payload = {
-      employeeId: 0,
+    const payload: CreateEmployee = {
       employeeCode: this.employeeCode.trim(),
       name: this.name.trim(),
       email: this.email.trim(),
@@ -116,9 +118,9 @@ export class EmployeeAddComponent {
       role: this.role || 'Software Engineer',
       salary: Number(this.salary),
       joiningDate: formattedJoiningDate,
-      managerId: this.manager ? (MANAGER_MAP[this.manager] ?? null) : null,
-      projectLeadId: this.projectLead ? (LEAD_MAP[this.projectLead] ?? null) : null,
-      userId: currentUserId,
+      managerId: this.getEmployeeId(this.manager),
+      projectLeadId: this.getEmployeeId(this.projectLead),
+      password: this.password,
       isActive: this.status === 'Active'
     };
 
@@ -130,13 +132,30 @@ export class EmployeeAddComponent {
         this.saving = false;
         this.router.navigate(['/employees']);
       },
-      error: (err) => {
+      error: (err: HttpErrorResponse) => {
         this.saving = false;
-        console.error('[EmployeeAdd] POST failed with error:', err);
-        console.error('[EmployeeAdd] Error status:', err.status);
-        console.error('[EmployeeAdd] Error message:', err.message);
-        console.error('[EmployeeAdd] Full error:', err);
+        console.error('[EmployeeAdd] POST failed with complete HttpErrorResponse:', err);
+        this.submitErrorMessage = this.formatHttpError(err);
       }
     });
+  }
+
+  private formatHttpError(error: HttpErrorResponse): string {
+    const backendError = error.error;
+    const backendMessage = typeof backendError === 'string'
+      ? backendError
+      : backendError?.message || backendError?.title || (backendError ? JSON.stringify(backendError) : '');
+    const message = backendMessage || error.message || 'Unknown error';
+    const status = error.status ? `${error.status} ${error.statusText || ''}`.trim() : 'Network error';
+
+    return `Unable to save employee (${status}): ${message}`;
+  }
+
+  private getEmployeeId(name: string): number | null {
+    if (!name || name === 'Corporate Board' || name === 'N/A') {
+      return null;
+    }
+
+    return this.employees.find((employee) => employee.name === name)?.employeeId ?? null;
   }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TaskAssignAPI.DTOs;
+using TaskAssignAPI.Interfaces;
 using TaskAssignAPI.Services;
 
 namespace TaskAssignAPI.Controllers
@@ -38,11 +39,11 @@ namespace TaskAssignAPI.Controllers
 
         // POST: api/Employee
         [HttpPost]
-        public async Task<IActionResult> AddEmployee(EmployeeDto employee)
+        public async Task<IActionResult> AddEmployee(CreateEmployeeDto employee)
         {
             await _employeeService.AddEmployeeAsync(employee);
 
-            return Ok("Employee added successfully.");
+            return Ok("Employee and user account added successfully.");
         }
 
         // PUT: api/Employee/1

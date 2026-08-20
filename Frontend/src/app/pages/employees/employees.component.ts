@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
@@ -35,6 +36,7 @@ export class EmployeesComponent implements OnInit {
   // Delete modal state
   showDeleteModal = false;
   employeeToDelete: Employee | null = null;
+  deleteErrorMessage = '';
 
   departments = ['IT', 'Human Resources', 'Management', 'Engineering', 'Finance', 'Sales'];
   roles = ['HR', 'Manager', 'Project Lead', 'Backend Developer', 'Frontend Developer', 'HR Specialist', 'QA Engineer', 'Software Engineer'];
@@ -136,6 +138,7 @@ export class EmployeesComponent implements OnInit {
 
   confirmDelete(emp: Employee): void {
     this.employeeToDelete = emp;
+    this.deleteErrorMessage = '';
     this.showDeleteModal = true;
   }
 
@@ -148,15 +151,29 @@ export class EmployeesComponent implements OnInit {
     if (this.employeeToDelete) {
       this.employeeService.deleteEmployee(this.employeeToDelete.employeeId).subscribe({
         next: () => {
+          this.deleteErrorMessage = '';
           this.loadEmployees();
           this.showDeleteModal = false;
           this.employeeToDelete = null;
         },
-        error: () => {
+        error: (err: HttpErrorResponse) => {
           this.showDeleteModal = false;
           this.employeeToDelete = null;
+          console.error('[Employees] DELETE failed with complete HttpErrorResponse:', err);
+          this.deleteErrorMessage = this.formatHttpError(err);
         }
       });
     }
+  }
+
+  private formatHttpError(error: HttpErrorResponse): string {
+    const backendError = error.error;
+    const backendMessage = typeof backendError === 'string'
+      ? backendError
+      : backendError?.message || backendError?.title || (backendError ? JSON.stringify(backendError) : '');
+    const message = backendMessage || error.message || 'Unknown error';
+    const status = error.status ? `${error.status} ${error.statusText || ''}`.trim() : 'Network error';
+
+    return `Unable to delete employee (${status}): ${message}`;
   }
 }

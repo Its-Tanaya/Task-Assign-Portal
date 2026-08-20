@@ -10,6 +10,8 @@
     </div>
   </div>
 
+  <div *ngIf="deleteErrorMessage" class="request-error" role="alert">{{ deleteErrorMessage }}</div>
+
   <!-- Search & Filter Controls -->
   <div class="filter-card">
     <div class="filter-grid">

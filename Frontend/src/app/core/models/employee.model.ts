@@ -18,4 +18,19 @@ export interface Employee {
   isActive?: boolean;
 }
 
+export interface CreateEmployee {
+  employeeCode: string;
+  name: string;
+  email: string;
+  phone: string;
+  departmentId: number;
+  role: string;
+  salary: number;
+  joiningDate: string;
+  managerId: number | null;
+  projectLeadId: number | null;
+  password: string;
+  isActive: boolean;
+}
+
 

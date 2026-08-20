@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { API_CONFIG } from './api.config';
-import { Employee } from '../core/models/employee.model';
+import { CreateEmployee, Employee } from '../core/models/employee.model';
 
 @Injectable({
   providedIn: 'root'
@@ -32,7 +32,7 @@ export class EmployeeService {
     );
   }
 
-  addEmployee(employee: Partial<Employee>): Observable<any> {
+  addEmployee(employee: CreateEmployee): Observable<any> {
     console.log('[EmployeeService] Sending POST request to:', this.apiUrl);
     console.log('[EmployeeService] Payload:', employee);
     return this.http.post<any>(this.apiUrl, employee, { responseType: 'text' as 'json' }).pipe(
