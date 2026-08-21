@@ -101,46 +101,26 @@ namespace TaskAssignAPI.Services
 
         public async Task DeleteEmployeeAsync(int id)
         {
-            var employee = await _context.Employees
-                .FirstOrDefaultAsync(e => e.EmployeeId == id);
+            var employee = await _repository.GetByIdAsync(id);
 
             if (employee == null)
                 return;
 
+            // Store the UserId before deleting the employee
             var userId = employee.UserId;
 
-            // 1. Delete task assignments for this employee
-            var taskAssignments = await _context.TaskAssignments
-                .Where(x => x.EmployeeId == id)
-                .ToListAsync();
+            // Delete the employee
+            _repository.Delete(employee);
+            await _repository.SaveAsync();
 
-            _context.TaskAssignments.RemoveRange(taskAssignments);
-            await _context.SaveChangesAsync();
+            // Delete the related user account
+            var user = await _userRepository.GetByIdAsync(userId);
 
-            // 2. Delete salary history for this employee
-            var salaryHistory = await _context.SalaryHistory
-                .Where(x => x.EmployeeId == id)
-                .ToListAsync();
-
-            _context.SalaryHistory.RemoveRange(salaryHistory);
-            await _context.SaveChangesAsync();
-
-            // 3. Delete messages sent or received by this user
-            var messages = await _context.Messages
-                .Where(x => x.SenderId == userId || x.ReceiverId == userId)
-                .ToListAsync();
-
-            _context.Messages.RemoveRange(messages);
-            await _context.SaveChangesAsync();
-
-            // 4. Delete employee record
-            _context.Employees.Remove(employee);
-            await _context.SaveChangesAsync();
-
-            // IMPORTANT:
-            // Do NOT delete the Users record.
-            // It may still be referenced by Tasks, Messages,
-            // SalaryHistory, or other records.
+            if (user != null)
+            {
+                _userRepository.Delete(user);
+                await _userRepository.SaveAsync();
+            }
         }
     }
     
